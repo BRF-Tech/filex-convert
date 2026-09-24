@@ -1,0 +1,125 @@
+{
+  "title": {
+    "de": "Konvertieren",
+    "en": "Convert",
+    "es": "Convertir",
+    "fr": "Convertir",
+    "tr": "Dönüştür"
+  },
+  "size": "md",
+  "state": {
+    "merge": false,
+    "step": "settings",
+    "target": "jpg"
+  },
+  "nodes": [
+    {
+      "type": "steps",
+      "props": {
+        "items": [
+          {
+            "id": "format",
+            "label": {
+              "de": "Format",
+              "en": "Format",
+              "es": "Formato",
+              "fr": "Format",
+              "tr": "Biçim"
+            },
+            "state": "done"
+          },
+          {
+            "id": "settings",
+            "label": {
+              "de": "Einstellungen",
+              "en": "Settings",
+              "es": "Configuración",
+              "fr": "Paramètres",
+              "tr": "Ayarlar"
+            },
+            "state": "active"
+          },
+          {
+            "id": "review",
+            "label": {
+              "de": "Überprüfung",
+              "en": "Review",
+              "es": "Revisión",
+              "fr": "Vérification",
+              "tr": "Gözden geçir"
+            },
+            "state": "todo"
+          }
+        ]
+      }
+    },
+    {
+      "type": "text",
+      "props": {
+        "heading": true,
+        "text": {
+          "de": "Wie soll konvertiert werden?",
+          "en": "How should it be converted?",
+          "es": "¿Cómo debe convertirse?",
+          "fr": "Comment le convertir ?",
+          "tr": "Nasıl dönüştürülsün?"
+        }
+      }
+    },
+    {
+      "type": "form",
+      "props": {
+        "fields": [
+          {
+            "key": "quality",
+            "type": "int",
+            "label": "Quality",
+            "help": "1–100; higher is larger and sharper.",
+            "default": 85,
+            "min": 1,
+            "max": 100
+          }
+        ],
+        "values": {
+          "quality": 85
+        }
+      }
+    },
+    {
+      "type": "text",
+      "props": {
+        "text": {
+          "de": "PNG → JPEG (integriert)",
+          "en": "PNG → JPEG (built in)",
+          "es": "PNG → JPEG (integrado)",
+          "fr": "PNG → JPEG (intégré)",
+          "tr": "PNG → JPEG (yerleşik)"
+        },
+        "tone": "muted"
+      }
+    }
+  ],
+  "actions": [
+    {
+      "id": "back",
+      "label": {
+        "de": "Zurück",
+        "en": "Back",
+        "es": "Atrás",
+        "fr": "Retour",
+        "tr": "Geri"
+      }
+    },
+    {
+      "id": "submit",
+      "label": {
+        "de": "Weiter",
+        "en": "Next",
+        "es": "Siguiente",
+        "fr": "Suivant",
+        "tr": "İleri"
+      },
+      "primary": true
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+# build artefacts
+plugin.wasm
+*.wasm
+*.sha256
+/dist/
+
+# editors / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# go
+/vendor/

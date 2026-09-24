@@ -1,0 +1,271 @@
+{
+  "title": {
+    "de": "Konvertieren",
+    "en": "Convert",
+    "es": "Convertir",
+    "fr": "Convertir",
+    "tr": "Dönüştür"
+  },
+  "size": "md",
+  "state": {
+    "merge": false,
+    "step": "format",
+    "target": "jpg"
+  },
+  "nodes": [
+    {
+      "type": "steps",
+      "props": {
+        "items": [
+          {
+            "id": "format",
+            "label": {
+              "de": "Format",
+              "en": "Format",
+              "es": "Formato",
+              "fr": "Format",
+              "tr": "Biçim"
+            },
+            "state": "active"
+          },
+          {
+            "id": "settings",
+            "label": {
+              "de": "Einstellungen",
+              "en": "Settings",
+              "es": "Configuración",
+              "fr": "Paramètres",
+              "tr": "Ayarlar"
+            },
+            "state": "todo"
+          },
+          {
+            "id": "review",
+            "label": {
+              "de": "Überprüfung",
+              "en": "Review",
+              "es": "Revisión",
+              "fr": "Vérification",
+              "tr": "Gözden geçir"
+            },
+            "state": "todo"
+          }
+        ]
+      }
+    },
+    {
+      "type": "text",
+      "props": {
+        "text": {
+          "de": "photo.png (PNG)",
+          "en": "photo.png (PNG)",
+          "es": "photo.png (PNG)",
+          "fr": "photo.png (PNG)",
+          "tr": "photo.png (PNG)"
+        }
+      }
+    },
+    {
+      "type": "text",
+      "props": {
+        "heading": true,
+        "text": {
+          "de": "Was soll daraus werden?",
+          "en": "What should it become?",
+          "es": "¿En qué debe convertirse?",
+          "fr": "Que doit-il devenir ?",
+          "tr": "Neye dönüşsün?"
+        }
+      }
+    },
+    {
+      "type": "text",
+      "props": {
+        "text": {
+          "de": "Ausgewählt: JPEG. Klicken Sie auf ein anderes Format, um es zu ändern, oder auf Weiter, um fortzufahren.",
+          "en": "Chosen: JPEG. Press another format to change it, or Next to carry on.",
+          "es": "Seleccionado: JPEG. Pulse otro formato para cambiarlo, o Siguiente para continuar.",
+          "fr": "Sélectionné : JPEG. Cliquez sur un autre format pour le changer, ou sur Suivant pour continuer.",
+          "tr": "Seçilen: JPEG. Değiştirmek için başka bir biçime, devam etmek için İleri'ye basın."
+        },
+        "tone": "muted"
+      }
+    },
+    {
+      "type": "form",
+      "props": {
+        "fields": [
+          {
+            "key": "target_image__jpg",
+            "type": "select",
+            "label": "Image",
+            "options": [
+              {
+                "value": "jpg",
+                "label": "JPEG"
+              },
+              {
+                "value": "gif",
+                "label": "GIF"
+              },
+              {
+                "value": "bmp",
+                "label": "BMP"
+              },
+              {
+                "value": "tiff",
+                "label": "TIFF"
+              },
+              {
+                "value": "webp",
+                "label": "WebP"
+              },
+              {
+                "value": "avif",
+                "label": "AVIF"
+              },
+              {
+                "value": "psd",
+                "label": "Photoshop (.psd)"
+              },
+              {
+                "value": "ico",
+                "label": "Icon (.ico)"
+              },
+              {
+                "value": "svg",
+                "label": "SVG"
+              },
+              {
+                "value": "qoi",
+                "label": "QOI"
+              },
+              {
+                "value": "pnm",
+                "label": "Netpbm (.ppm/.pgm/.pbm)"
+              },
+              {
+                "value": "tga",
+                "label": "Targa (.tga)"
+              },
+              {
+                "value": "dds",
+                "label": "DirectDraw Surface (.dds)"
+              },
+              {
+                "value": "exr",
+                "label": "OpenEXR (.exr)"
+              }
+            ]
+          },
+          {
+            "key": "target_video__jpg",
+            "type": "select",
+            "label": "Video",
+            "options": [
+              {
+                "value": "mp4",
+                "label": "MP4"
+              },
+              {
+                "value": "mkv",
+                "label": "Matroska (.mkv)"
+              },
+              {
+                "value": "webm",
+                "label": "WebM"
+              },
+              {
+                "value": "mov",
+                "label": "QuickTime (.mov)"
+              }
+            ]
+          },
+          {
+            "key": "target_document__jpg",
+            "type": "select",
+            "label": "Document",
+            "options": [
+              {
+                "value": "pdf",
+                "label": "PDF"
+              },
+              {
+                "value": "ps",
+                "label": "PostScript (.ps)"
+              },
+              {
+                "value": "eps",
+                "label": "EPS"
+              }
+            ]
+          },
+          {
+            "key": "target_archive__jpg",
+            "type": "select",
+            "label": "Archive",
+            "options": [
+              {
+                "value": "zip",
+                "label": "ZIP"
+              },
+              {
+                "value": "tar",
+                "label": "TAR"
+              },
+              {
+                "value": "tgz",
+                "label": "TAR + gzip (.tar.gz)"
+              },
+              {
+                "value": "tzst",
+                "label": "TAR + zstd (.tar.zst)"
+              },
+              {
+                "value": "txz",
+                "label": "TAR + xz (.tar.xz)"
+              }
+            ]
+          },
+          {
+            "key": "target_text__jpg",
+            "type": "select",
+            "label": "Text",
+            "options": [
+              {
+                "value": "txt",
+                "label": "Plain text (.txt)"
+              }
+            ]
+          }
+        ],
+        "values": {
+          "target_image__jpg": "jpg"
+        }
+      }
+    }
+  ],
+  "actions": [
+    {
+      "id": "cancel",
+      "label": {
+        "de": "Abbrechen",
+        "en": "Cancel",
+        "es": "Cancelar",
+        "fr": "Annuler",
+        "tr": "Vazgeç"
+      }
+    },
+    {
+      "id": "submit",
+      "label": {
+        "de": "Weiter",
+        "en": "Next",
+        "es": "Siguiente",
+        "fr": "Suivant",
+        "tr": "İleri"
+      },
+      "primary": true
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  GOTOOLCHAIN: local
+
+jobs:
+  test:
+    name: vet, test, wasm build, size gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.5'
+          cache: true
+
+      - name: gofmt
+        run: |
+          out=$(gofmt -l .)
+          if [ -n "$out" ]; then echo "gofmt needed:"; echo "$out"; exit 1; fi
+
+      - name: go vet
+        run: go vet ./...
+
+      - name: go test
+        run: go test -count=1 ./...
+
+      - name: Generated files are up to date (manifest.embed.json, MATRIX.md)
+        run: |
+          go generate ./...
+          go run ./tools/matrix > MATRIX.md
+          git diff --exit-code -- manifest.embed.json MATRIX.md
+
+      - name: Build plugin.wasm (size gate 8 MiB soft / 16 MiB hard)
+        run: bash scripts/build.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: plugin-wasm
+          path: |
+            plugin.wasm
+            plugin.wasm.sha256
+          retention-days: 7

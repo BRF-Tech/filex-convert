@@ -1,0 +1,198 @@
+{
+  "title": {
+    "de": "Konvertieren",
+    "en": "Convert",
+    "es": "Convertir",
+    "fr": "Convertir",
+    "tr": "Dönüştür"
+  },
+  "size": "md",
+  "state": {
+    "merge": false,
+    "step": "review",
+    "target": "jpg"
+  },
+  "nodes": [
+    {
+      "type": "steps",
+      "props": {
+        "items": [
+          {
+            "id": "format",
+            "label": {
+              "de": "Format",
+              "en": "Format",
+              "es": "Formato",
+              "fr": "Format",
+              "tr": "Biçim"
+            },
+            "state": "done"
+          },
+          {
+            "id": "settings",
+            "label": {
+              "de": "Einstellungen",
+              "en": "Settings",
+              "es": "Configuración",
+              "fr": "Paramètres",
+              "tr": "Ayarlar"
+            },
+            "state": "done"
+          },
+          {
+            "id": "review",
+            "label": {
+              "de": "Überprüfung",
+              "en": "Review",
+              "es": "Revisión",
+              "fr": "Vérification",
+              "tr": "Gözden geçir"
+            },
+            "state": "active"
+          }
+        ]
+      }
+    },
+    {
+      "type": "text",
+      "props": {
+        "heading": true,
+        "text": {
+          "de": "Das wird ausgeführt",
+          "en": "This is what will happen",
+          "es": "Esto es lo que se hará",
+          "fr": "Voici ce qui va se passer",
+          "tr": "Yapılacak iş"
+        }
+      }
+    },
+    {
+      "type": "list",
+      "props": {
+        "columns": [
+          {
+            "key": "what",
+            "label": {
+              "de": "Was",
+              "en": "What",
+              "es": "Qué",
+              "fr": "Quoi",
+              "tr": "Ne"
+            }
+          },
+          {
+            "key": "value",
+            "label": {
+              "de": "Wert",
+              "en": "Value",
+              "es": "Valor",
+              "fr": "Valeur",
+              "tr": "Değer"
+            }
+          }
+        ],
+        "rows": [
+          {
+            "cells": {
+              "value": {
+                "de": "photo.png (PNG)",
+                "en": "photo.png (PNG)",
+                "es": "photo.png (PNG)",
+                "fr": "photo.png (PNG)",
+                "tr": "photo.png (PNG)"
+              },
+              "what": {
+                "de": "Dateien",
+                "en": "Files",
+                "es": "Archivos",
+                "fr": "Fichiers",
+                "tr": "Dosyalar"
+              }
+            },
+            "id": "files"
+          },
+          {
+            "cells": {
+              "value": {
+                "de": "JPEG",
+                "en": "JPEG",
+                "es": "JPEG",
+                "fr": "JPEG",
+                "tr": "JPEG"
+              },
+              "what": {
+                "de": "Konvertieren in",
+                "en": "Convert to",
+                "es": "Convertir a",
+                "fr": "Convertir en",
+                "tr": "Hedef biçim"
+              }
+            },
+            "id": "target"
+          },
+          {
+            "cells": {
+              "value": {
+                "de": "85",
+                "en": "85",
+                "es": "85",
+                "fr": "85",
+                "tr": "85"
+              },
+              "what": {
+                "de": "Qualität",
+                "en": "Quality",
+                "es": "Calidad",
+                "fr": "Qualité",
+                "tr": "Kalite"
+              }
+            },
+            "id": "quality"
+          },
+          {
+            "cells": {
+              "value": {
+                "de": "PNG → JPEG (integriert)",
+                "en": "PNG → JPEG (built in)",
+                "es": "PNG → JPEG (integrado)",
+                "fr": "PNG → JPEG (intégré)",
+                "tr": "PNG → JPEG (yerleşik)"
+              },
+              "what": {
+                "de": "Weg",
+                "en": "Route",
+                "es": "Ruta",
+                "fr": "Chemin",
+                "tr": "İzlenecek yol"
+              }
+            },
+            "id": "route"
+          }
+        ]
+      }
+    }
+  ],
+  "actions": [
+    {
+      "id": "back",
+      "label": {
+        "de": "Zurück",
+        "en": "Back",
+        "es": "Atrás",
+        "fr": "Retour",
+        "tr": "Geri"
+      }
+    },
+    {
+      "id": "submit",
+      "label": {
+        "de": "Konvertieren",
+        "en": "Convert",
+        "es": "Convertir",
+        "fr": "Convertir",
+        "tr": "Dönüştür"
+      },
+      "primary": true
+    }
+  ]
+}

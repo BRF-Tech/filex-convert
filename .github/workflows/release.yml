@@ -1,0 +1,77 @@
+name: Release
+
+# On a version tag: rebuild plugin.wasm reproducibly, check that the sha256
+# committed in filex-app.json (written by scripts/release-prepare.sh before
+# tagging) is the hash of this build, and attach plugin.wasm +
+# filex-app.json + plugin.wasm.sha256 + MATRIX.md to the GitHub release.
+# filex installs the app from "BRF-Tech/filex-convert" at that tag: it reads
+# filex-app.json from the repository, expands {tag} in wasm.url, downloads
+# the module and refuses it unless the sha256 matches.
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+env:
+  GOTOOLCHAIN: local
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.5'
+          cache: true
+
+      - name: Tag matches the manifest version
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          ver=$(python3 -c 'import json;print(json.load(open("filex-app.json"))["version"])')
+          if [ "$tag" != "$ver" ]; then
+            echo "tag v$tag but filex-app.json says $ver" >&2
+            exit 1
+          fi
+
+      - name: Test
+        run: go test -count=1 ./...
+
+      - name: Build
+        run: bash scripts/build.sh
+
+      - name: The committed sha256 is the hash of what this tag builds
+        run: |
+          built=$(cut -d' ' -f1 plugin.wasm.sha256)
+          committed=$(grep -o '"sha256": *"[0-9a-f]\{64\}"' filex-app.json | grep -o '[0-9a-f]\{64\}')
+          echo "built:     $built"
+          echo "committed: $committed"
+          if [ "$built" != "$committed" ]; then
+            echo "filex-app.json does not carry this build's hash. Run scripts/release-prepare.sh, commit, re-tag." >&2
+            exit 1
+          fi
+
+      - name: Release notes from CHANGELOG
+        run: |
+          ver="${GITHUB_REF_NAME#v}"
+          awk -v v="$ver" '
+            $0 ~ "^## \\[?"v { on=1; next }
+            on && /^## / { exit }
+            on { print }
+          ' CHANGELOG.md > /tmp/notes.md
+          if [ ! -s /tmp/notes.md ]; then echo "Release $GITHUB_REF_NAME" > /tmp/notes.md; fi
+          cat /tmp/notes.md
+
+      - name: Publish the release
+        uses: softprops/action-gh-release@v2
+        with:
+          body_path: /tmp/notes.md
+          files: |
+            plugin.wasm
+            plugin.wasm.sha256
+            filex-app.json
+            MATRIX.md
