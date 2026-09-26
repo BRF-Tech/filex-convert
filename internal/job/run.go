@@ -56,7 +56,7 @@ func Run(h Host, in *wire.ActionRunInput) (*wire.ActionRunOutput, error) {
 	res := &Result{}
 	total := int64(len(in.Inputs))
 	for i, f := range in.Inputs {
-		h.Progress(int64(i), total, progressLine(f.Name, target, in.Locale))
+		h.Progress(int64(i), total, progressLine(f.Name, target))
 		fileParams := options.Options{}
 		for k, v := range params {
 			fileParams[k] = v
@@ -82,11 +82,21 @@ func Run(h Host, in *wire.ActionRunInput) (*wire.ActionRunOutput, error) {
 	}, nil
 }
 
-// progressLine is the tray message while a file converts, in the job's
-// language: the arrow reads the same everywhere, a format's label does not
-// ("Plain text (.txt)" is "Düz metin (.txt)" on a Turkish tray).
-func progressLine(name, target, locale string) string {
-	return name + " → " + labelIn(target, locale)
+// progressLine is the tray message while a file converts: the file's name
+// and the target's name, in words that read the same in every language
+// ("notes.md → TXT", "clip.avi → MP4").
+//
+// ⚠ It is ONE string (pluginkit.Progress takes no Text), so it cannot be
+// "in the job's language": the job's locale is the host's guess at the
+// reader's, and an embedded filex guesses wrong — a Turkish window on an
+// account saved as English queued jobs with locale `en`, and the Turkish
+// tray read "notes.md → Plain text (.txt)" (2026-09-26). A descriptive label
+// ("Plain text (.txt)") is therefore never used here; Format.Neutral is.
+func progressLine(name, target string) string {
+	if f, ok := formats.ByID(target); ok {
+		return name + " → " + f.Neutral()
+	}
+	return name + " → " + target
 }
 
 // labelIn is a format id's label in one language (the id when unknown).
@@ -141,7 +151,7 @@ func convertOne(h Host, f wire.FileRef, target string, params options.Options, e
 func routeError(err error) *Error {
 	var nre *graph.NoRouteError
 	if errors.As(err, &nre) && len(nre.MissingEngines) > 0 {
-		return &Error{Code: CodeEngineMissing, Detail: strings.Join(nre.MissingEngines, ", ")}
+		return &Error{Code: CodeEngineMissing, Detail: strings.Join(nre.MissingEngines, ", "), Engines: nre.MissingEngines}
 	}
 	if errors.Is(err, graph.ErrUnknownFormat) {
 		return &Error{Code: CodeUnknownFormat, Detail: err.Error()}
@@ -223,20 +233,20 @@ func step(h Host, it item, e graph.Edge, idx int, params options.Options) ([]ite
 		if errors.As(err, &he) {
 			switch he.Code {
 			case wire.ErrUnavailable, wire.ErrPermissionDenied:
-				return nil, &Error{Code: CodeEngineMissing, Detail: e.Engine + ": " + he.Message}
+				return nil, &Error{Code: CodeEngineMissing, Detail: e.Engine + ": " + he.Message, Engines: []string{e.Engine}}
 			case wire.ErrTimeout:
 				return nil, &Error{Code: CodeCancelled, Detail: he.Message}
 			case wire.ErrTooLarge:
 				return nil, &Error{Code: CodeTooLarge, Detail: he.Message}
 			}
 		}
-		return nil, &Error{Code: CodeEngineFailed, Detail: e.Engine + ": " + err.Error()}
+		return nil, &Error{Code: CodeEngineFailed, Detail: e.Engine + ": " + err.Error(), Engines: []string{e.Engine}}
 	}
 	if res.Exit != 0 {
-		return nil, &Error{Code: CodeEngineFailed, Detail: fmt.Sprintf("%s exit %d: %s", e.Engine, res.Exit, lastLine(res.StderrTail))}
+		return nil, &Error{Code: CodeEngineFailed, Detail: fmt.Sprintf("%s exit %d: %s", e.Engine, res.Exit, lastLine(res.StderrTail)), Engines: []string{e.Engine}}
 	}
 	if len(res.Outputs) == 0 {
-		return nil, &Error{Code: CodeEngineFailed, Detail: e.Engine + " produced no file: " + lastLine(res.StderrTail)}
+		return nil, &Error{Code: CodeEngineFailed, Detail: e.Engine + " produced no file: " + lastLine(res.StderrTail), Engines: []string{e.Engine}}
 	}
 	if !inv.Multi {
 		pick := res.Outputs[0]
@@ -278,6 +288,13 @@ func lastLine(s string) string {
 		s = strings.TrimSpace(s[i+1:])
 	}
 	return clip(s, 200)
+}
+
+func clip(s string, n int) string {
+	if len(s) <= n {
+		return s
+	}
+	return s[:n] + "…"
 }
 
 func primaryExt(format string) string {

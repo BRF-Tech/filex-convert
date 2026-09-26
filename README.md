@@ -294,6 +294,18 @@ language, a language pack's included, so Spanish, German and French readers
 get the translations. (Hosts that narrowed every locale to English or Turkish
 predate app plugins and cannot install this.)
 
+⚠ **No word on a screen is picked for the call's language.** The language a
+call carries is filex's *guess* at the reader's — the account's saved
+language before the window's own — and an embedded filex (the web component
+in a host page) is where the guess is wrong: a Turkish window on an account
+saved as English. So every word the wizard shows travels as a Text in all
+five languages — a form field's label, help and placeholder and each
+button's label too (`wire.Field.I18n`, `wire.FieldOption.LabelI18n`) — and
+the reader's own filex picks one. The one string that cannot be a Text, the
+tray's progress line, names formats by names that read the same everywhere
+("notes.md → TXT"). A failure's technical detail goes to the plugin's log,
+not to the person.
+
 `internal/app/app_test.go` measures, on every `go test`:
 
 - **the manifest** filex would install: the closed permission set, the
@@ -310,6 +322,10 @@ predate app plugins and cannot install this.)
 - **every language**: every `Text` carries `en`, `tr`, `es`, `de` and `fr`,
   and the screen drawn once per language has the same shape, with the group
   headings, the knob labels and the buttons actually translated;
+- **the reader's language, not the call's**: every step drawn with the call
+  in English and in Turkish, read as a Turkish and as an English reader —
+  nothing may read the same to both unless it is a name or a number
+  (`reader_language_test.go`, here and in `internal/job`);
 - **a conversion end to end**: the wizard walked step by step → the queued
   job → a JPEG in the fake host's files, with no engine asked for on a
   pure-Go route;

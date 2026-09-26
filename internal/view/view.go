@@ -33,8 +33,25 @@
 // is one a person has to press Next through with nothing on it.
 //
 // It is pure: no host function is called, everything comes from the event
-// (the selection, the engine map, the locale, the echoed state and the
-// form's values), so it is unit-tested on the host like the graph.
+// (the selection, the engine map, the echoed state and the form's values),
+// so it is unit-tested on the host like the graph.
+//
+// ⚠⚠ Not the locale. Every word on these screens travels as a Text — every
+// language at once — and the reader's own filex picks one, INCLUDING the
+// words a field carries: a field's label, help and placeholder and an
+// option's label are written as {en, tr, …} maps (wire.Field.I18n,
+// wire.FieldOption.LabelI18n), never as one string chosen for the call.
+// The call's locale is the host's GUESS at the reader's language (the
+// account's saved language first, the request's Accept-Language second), and
+// an embedded filex is where the guess is wrong: a web component mounted
+// with `locale: "tr"` on an account still saved as English drew this wizard
+// with Turkish steps, headings and buttons around English category headings,
+// format names, knob labels and help ("Image", "Plain text (.txt)",
+// "Quality — 1–100; higher is larger and sharper"), because those were the
+// strings picked for `en` (Burak, 2026-09-26: "converter'da bazı yerler
+// İngilizce kalıyor"). TestTheScreenIsTheReadersLanguageNotTheCalls
+// (internal/app) draws every step with the call in one language and reads it
+// in the other.
 package view
 
 import (
@@ -120,12 +137,28 @@ func nameOf(id, locale string) string {
 }
 
 // Every word on these screens comes from internal/i18n, in every language
-// the converter ships (en, tr, es, de, fr): i18n.T for a Text a surface
-// carries, i18n.S / i18n.Pick where a field wants one language's string.
+// the converter ships (en, tr, es, de, fr), and reaches the screen as a Text:
+// i18n.T for a message, i18n.Each for words put together from translated
+// parts, and field/option for the texts a form carries. Nothing here picks
+// one language (see the package comment for why).
 
 // names is a format id's label in every language.
 func names(id string) wire.Text {
 	return i18n.Each(func(lang string) string { return nameOf(id, lang) })
+}
+
+// field fills a form field's words in every language: label, help and
+// placeholder travel as maps the reader's filex resolves (Label, Help and
+// Placeholder keep the English, for code that reads them as strings).
+func field(f wire.Field, label, help, placeholder wire.Text) wire.Field {
+	f.Label, f.Help, f.Placeholder = label["en"], help["en"], placeholder["en"]
+	f.I18n = &wire.FieldI18n{Label: label, Help: help, Placeholder: placeholder}
+	return f
+}
+
+// option is one button of a choice, its label in every language.
+func option(value string, label wire.Text) wire.FieldOption {
+	return wire.FieldOption{Value: value, Label: label["en"], LabelI18n: label}
 }
 
 // selection is what the event says about the files.
@@ -488,12 +521,11 @@ func (w wizard) params(keys []string, variant string) options.Options {
 
 // Handle answers a view event for the Convert wizard.
 func Handle(in *wire.ViewEventInput) (*wire.Surface, error) {
-	locale := in.Context.Locale
 	if in.Event == "action" && in.ActionID == ActionCancel {
 		return &wire.Surface{Done: true}, nil
 	}
 	sel := analyse(in)
-	if s := nothingToConvert(sel, in, locale); s != nil {
+	if s := nothingToConvert(sel, in); s != nil {
 		return s, nil
 	}
 	w := read(in, sel)
@@ -505,17 +537,17 @@ func Handle(in *wire.ViewEventInput) (*wire.Surface, error) {
 	case in.Event == "submit" && w.Step == StepReview:
 		if w.Target == "" {
 			w.Step = StepFormat
-			return screen(w, sel, in, locale, nil, noTarget()), nil
+			return screen(w, sel, in, nil, noTarget()), nil
 		}
 		keys, variant, _ := w.route(sel)
 		params := w.params(keys, variant)
 		if errs := params.Validate(keys, variant); len(errs) > 0 {
 			w.Step = StepSettings
-			return screen(w, sel, in, locale, fieldErrors(errs), nil), nil
+			return screen(w, sel, in, fieldErrors(errs), nil), nil
 		}
 		if sel.readOnly && w.Dest == "" {
 			w.Step = StepWhere
-			return screen(w, sel, in, locale, nil, i18n.T("view.where.choose")), nil
+			return screen(w, sel, in, nil, i18n.T("view.where.choose")), nil
 		}
 		params[job.ParamTarget] = w.Target
 		req := &wire.JobRequest{ActionID: ActionID, Params: map[string]any(params)}
@@ -527,17 +559,17 @@ func Handle(in *wire.ViewEventInput) (*wire.Surface, error) {
 		return &wire.Surface{Job: req}, nil
 
 	case in.Event == "submit" && w.Step == StepWhere && w.Dest == "":
-		return screen(w, sel, in, locale, nil, i18n.T("view.where.choose")), nil
+		return screen(w, sel, in, nil, i18n.T("view.where.choose")), nil
 
 	case in.Event == "submit" && w.Step == StepFormat && w.Target == "":
 		// Next is disabled until something is picked; a submit that arrives
 		// anyway is answered with the reason, not with the next step.
-		return screen(w, sel, in, locale, nil, noTarget()), nil
+		return screen(w, sel, in, nil, noTarget()), nil
 
 	case in.Event == "submit" && w.Step == StepSettings:
 		keys, variant, _ := w.route(sel)
 		if errs := w.params(keys, variant).Validate(keys, variant); len(errs) > 0 {
-			return screen(w, sel, in, locale, fieldErrors(errs), nil), nil
+			return screen(w, sel, in, fieldErrors(errs), nil), nil
 		}
 		w.Step = w.next(sel)
 
@@ -548,7 +580,7 @@ func Handle(in *wire.ViewEventInput) (*wire.Surface, error) {
 		// `read` has already taken it as the answer, and the step stays where
 		// it is. The package comment says what moving on by itself did.
 	}
-	return screen(w, sel, in, locale, nil, nil), nil
+	return screen(w, sel, in, nil, nil), nil
 }
 
 func noTarget() wire.Text {
@@ -566,7 +598,7 @@ func fieldErrors(errs map[string]map[string]string) map[string]wire.Text {
 // nothingToConvert is the screen for a selection with no wizard in it at
 // all: nothing selected, a file whose type is unknown, or files with no
 // target in common. It answers nil when there is work to do.
-func nothingToConvert(sel selection, in *wire.ViewEventInput, locale string) *wire.Surface {
+func nothingToConvert(sel selection, in *wire.ViewEventInput) *wire.Surface {
 	s := &wire.Surface{Title: i18n.T("view.convert"), Size: "md", State: map[string]any{FieldTarget: ""}}
 	closeOnly := []wire.SurfaceAction{{ID: ActionCancel, Label: i18n.T("view.close")}}
 	switch {
@@ -576,7 +608,7 @@ func nothingToConvert(sel selection, in *wire.ViewEventInput, locale string) *wi
 		return s
 	case len(sel.unknown) > 0:
 		s.Nodes = append(s.Nodes,
-			textNode(selectionLine(sel, in.Context.Inputs, locale), ""),
+			textNode(selectionLine(sel, in.Context.Inputs), ""),
 			textNode(i18n.T("view.unknown_type", "names", strings.Join(sel.unknown, ", ")), "danger"))
 		s.Actions = closeOnly
 		return s
@@ -585,8 +617,8 @@ func nothingToConvert(sel selection, in *wire.ViewEventInput, locale string) *wi
 		if len(sel.blocked) > 0 {
 			msg = i18n.T("view.no_engines")
 		}
-		s.Nodes = append(s.Nodes, textNode(selectionLine(sel, in.Context.Inputs, locale), ""), textNode(msg, "danger"))
-		s.Nodes = append(s.Nodes, missingEnginesNote(sel, locale)...)
+		s.Nodes = append(s.Nodes, textNode(selectionLine(sel, in.Context.Inputs), ""), textNode(msg, "danger"))
+		s.Nodes = append(s.Nodes, missingEnginesNote(sel)...)
 		s.Actions = closeOnly
 		return s
 	}
@@ -598,7 +630,7 @@ func nothingToConvert(sel selection, in *wire.ViewEventInput, locale string) *wi
 // screen draws the step the wizard is on. `errs` marks the fields the
 // validator refused; `nudge` is the one sentence a step says when a press
 // could not be honoured.
-func screen(w wizard, sel selection, in *wire.ViewEventInput, locale string, errs map[string]wire.Text, nudge wire.Text) *wire.Surface {
+func screen(w wizard, sel selection, in *wire.ViewEventInput, errs map[string]wire.Text, nudge wire.Text) *wire.Surface {
 	// Nothing but the first step can be answered without a target, so a
 	// wizard whose answer went stale (an engine left, the selection
 	// changed) is back where it started rather than on a settings step
@@ -615,7 +647,7 @@ func screen(w wizard, sel selection, in *wire.ViewEventInput, locale string, err
 	}
 	switch w.Step {
 	case StepFormat:
-		s.Nodes = append(s.Nodes, textNode(selectionLine(sel, in.Context.Inputs, locale), ""))
+		s.Nodes = append(s.Nodes, textNode(selectionLine(sel, in.Context.Inputs), ""))
 		if nudge != nil {
 			s.Nodes = append(s.Nodes, textNode(nudge, "danger"))
 		}
@@ -627,9 +659,9 @@ func screen(w wizard, sel selection, in *wire.ViewEventInput, locale string, err
 			// with now (CategoryField says why that key moves).
 			chosen[CategoryField(formats.CategoryOf(w.Target), w.Target)] = w.Target
 		}
-		s.Nodes = append(s.Nodes, formNode(targetFields(sel, locale, w.Target), chosen))
-		s.Nodes = append(s.Nodes, missingEnginesNote(sel, locale)...)
-		s.Nodes = append(s.Nodes, blockedList(sel, locale)...)
+		s.Nodes = append(s.Nodes, formNode(targetFields(sel, w.Target), chosen))
+		s.Nodes = append(s.Nodes, missingEnginesNote(sel)...)
+		s.Nodes = append(s.Nodes, blockedList(sel)...)
 		s.Actions = []wire.SurfaceAction{
 			{ID: ActionCancel, Label: i18n.T("view.cancel")},
 			{ID: ActionSubmit, Label: i18n.T("view.next"), Primary: true, Disabled: w.Target == ""},
@@ -640,7 +672,7 @@ func screen(w wizard, sel selection, in *wire.ViewEventInput, locale string, err
 		s.Nodes = append(s.Nodes,
 			headingNode(i18n.T("view.combine_heading")),
 			textNode(i18n.T("view.combine_body", "n", n, "format", names(w.Target)), ""),
-			formNode([]wire.Field{knobField(options.Merge, "", locale)}, map[string]any{options.Merge: w.Merge}),
+			formNode([]wire.Field{knobField(options.Merge, "")}, map[string]any{options.Merge: w.Merge}),
 		)
 		s.Actions = backNext()
 
@@ -649,7 +681,7 @@ func screen(w wizard, sel selection, in *wire.ViewEventInput, locale string, err
 		fields := make([]wire.Field, 0, len(keys))
 		vals := map[string]any{}
 		for _, k := range keys {
-			fields = append(fields, knobField(k, variant, locale))
+			fields = append(fields, knobField(k, variant))
 			if v, ok := w.Knobs[k]; ok && v != nil && v != "" {
 				vals[k] = v
 			} else {
@@ -677,7 +709,7 @@ func screen(w wizard, sel selection, in *wire.ViewEventInput, locale string, err
 	default: // StepReview
 		s.Nodes = append(s.Nodes,
 			headingNode(i18n.T("view.review_heading")),
-			reviewList(w, sel, in, locale))
+			reviewList(w, sel, in))
 		s.Actions = []wire.SurfaceAction{
 			{ID: ActionBack, Label: i18n.T("view.back")},
 			{ID: ActionSubmit, Label: i18n.T("view.convert"), Primary: true, Disabled: w.Target == ""},
@@ -739,12 +771,12 @@ func stepLabel(id string) wire.Text {
 
 // reviewList is the last step's whole point: the job in a table, so the
 // person reads what is about to happen before it happens.
-func reviewList(w wizard, sel selection, in *wire.ViewEventInput, locale string) wire.Node {
+func reviewList(w wizard, sel selection, in *wire.ViewEventInput) wire.Node {
 	keys, variant, route := w.route(sel)
 	params := w.params(keys, variant)
 	rows := []map[string]any{
 		{"id": "files", "cells": map[string]any{
-			"what": i18n.T("view.review.files"), "value": selectionLine(sel, in.Context.Inputs, locale)}},
+			"what": i18n.T("view.review.files"), "value": selectionLine(sel, in.Context.Inputs)}},
 		{"id": FieldTarget, "cells": map[string]any{
 			"what": i18n.T("view.review.target"), "value": names(w.Target)}},
 	}
@@ -836,7 +868,7 @@ func formNode(fields []wire.Field, vals map[string]any) wire.Node {
 }
 
 // selectionLine renders "3 files: 2 × PNG, 1 × JPEG" / "1 file: report.docx (Word)".
-func selectionLine(sel selection, inputs []wire.FileRef, locale string) wire.Text {
+func selectionLine(sel selection, inputs []wire.FileRef) wire.Text {
 	if len(inputs) == 1 {
 		f, _, ok := formats.Detect(inputs[0].Name)
 		if !ok {
@@ -867,7 +899,7 @@ func selectionLine(sel selection, inputs []wire.FileRef, locale string) wire.Tex
 //
 // Every group is keyed around `chosen`, the answer the step is drawn with
 // (CategoryField says why); the caller lights that one button.
-func targetFields(sel selection, locale, chosen string) []wire.Field {
+func targetFields(sel selection, chosen string) []wire.Field {
 	var out []wire.Field
 	for _, c := range formats.Categories {
 		var opts []wire.FieldOption
@@ -875,28 +907,28 @@ func targetFields(sel selection, locale, chosen string) []wire.Field {
 			if !contains(sel.targets, f.ID) {
 				continue
 			}
-			label := f.Name(locale)
+			label := wire.Text(f.Names())
 			if len(sel.sources) == 1 && sel.sources[0] == f.ID {
-				label = i18n.S(locale, "view.reencode", "format", label)
+				label = i18n.T("view.reencode", "format", label)
 			}
-			opts = append(opts, wire.FieldOption{Value: f.ID, Label: label})
+			opts = append(opts, option(f.ID, label))
 		}
 		if len(opts) == 0 {
 			continue
 		}
-		out = append(out, wire.Field{
+		out = append(out, field(wire.Field{
 			Key:     CategoryField(c, chosen),
 			Type:    "select",
-			Label:   i18n.Pick(locale, formats.CategoryLabel(c)),
 			Options: opts,
-		})
+		}, wire.Text(formats.CategoryLabel(c)), nil, nil))
 	}
 	return out
 }
 
-func knobField(key, variant, locale string) wire.Field {
+func knobField(key, variant string) wire.Field {
 	d := options.Defs[key]
-	f := wire.Field{Key: key, Label: i18n.Pick(locale, d.Label), Help: i18n.Pick(locale, d.Help)}
+	f := wire.Field{Key: key}
+	var placeholder wire.Text
 	switch d.Type {
 	case "int":
 		f.Type = "int"
@@ -906,7 +938,7 @@ func knobField(key, variant, locale string) wire.Field {
 	case "select":
 		f.Type = "select"
 		for _, c := range options.Choices(key, variant) {
-			f.Options = append(f.Options, wire.FieldOption{Value: c.Value, Label: i18n.Pick(locale, c.Label)})
+			f.Options = append(f.Options, option(c.Value, wire.Text(c.Label)))
 		}
 		f.Default = options.DefaultFor(key, variant)
 	case "bool":
@@ -918,13 +950,13 @@ func knobField(key, variant, locale string) wire.Field {
 		// `choice` draws both answers as buttons, in the plugin's own words.
 		f.Style = "choice"
 		for _, c := range options.Choices(key, variant) {
-			f.Options = append(f.Options, wire.FieldOption{Value: c.Value, Label: i18n.Pick(locale, c.Label)})
+			f.Options = append(f.Options, option(c.Value, wire.Text(c.Label)))
 		}
 	default:
 		f.Type = "string"
-		f.Placeholder = i18n.S(locale, "view.all")
+		placeholder = i18n.T("view.all")
 	}
-	return f
+	return field(f, wire.Text(d.Label), wire.Text(d.Help), placeholder)
 }
 
 // canInstallEngines says whether the person on the screen is the one who
@@ -947,7 +979,7 @@ func canInstallEngines(a *wire.Actor) bool {
 // but this host cannot reach, each with the engine it needs, as a greyed
 // list under the button groups (a button group cannot grey an option out,
 // so the list is how a missing format stays visible BY NAME).
-func blockedList(sel selection, locale string) []wire.Node {
+func blockedList(sel selection) []wire.Node {
 	if len(sel.blocked) == 0 || !sel.admin {
 		return nil
 	}
@@ -958,11 +990,12 @@ func blockedList(sel selection, locale string) []wire.Node {
 			if !ok {
 				continue
 			}
+			category, name := formats.CategoryLabel(c), f
 			rows = append(rows, map[string]any{
 				"id": f.ID,
 				"cells": map[string]any{
-					"format": i18n.Pick(locale, formats.CategoryLabel(c)) + " · " + f.Name(locale),
-					"needs":  i18n.S(locale, "view.blocked.needs", "engine", need),
+					"format": i18n.Each(func(lang string) string { return i18n.Pick(lang, category) + " · " + name.Name(lang) }),
+					"needs":  i18n.T("view.blocked.needs", "engine", need),
 				},
 			})
 		}
@@ -971,8 +1004,8 @@ func blockedList(sel selection, locale string) []wire.Node {
 		textNode(i18n.T("view.blocked.intro"), "muted"),
 		{Type: "list", Props: map[string]any{
 			"columns": []map[string]any{
-				{"key": "format", "label": i18n.S(locale, "view.blocked.format")},
-				{"key": "needs", "label": i18n.S(locale, "view.blocked.needs_col")},
+				{"key": "format", "label": i18n.T("view.blocked.format")},
+				{"key": "needs", "label": i18n.T("view.blocked.needs_col")},
 			},
 			"rows": rows,
 		}},
@@ -981,7 +1014,7 @@ func blockedList(sel selection, locale string) []wire.Node {
 
 // missingEnginesNote says which engines are absent and what each would
 // unlock, so the person knows why a format is not in the list.
-func missingEnginesNote(sel selection, locale string) []wire.Node {
+func missingEnginesNote(sel selection) []wire.Node {
 	var missing []string
 	for _, e := range graph.Engines {
 		if !sel.engines[e] {

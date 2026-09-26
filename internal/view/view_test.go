@@ -165,8 +165,8 @@ func texts(s *wire.Surface) []string {
 	return out
 }
 
-// listRows reads the grey list: its cells are the plain strings a list
-// draws (the review table's cells are Texts, and reviewRows reads those).
+// listRows reads the grey list, in English (its cells are Texts, like the
+// review table's; reviewRows reads those).
 func listRows(s *wire.Surface) []string {
 	var out []string
 	for _, n := range s.Nodes {
@@ -175,15 +175,19 @@ func listRows(s *wire.Surface) []string {
 		}
 		for _, r := range n.Props["rows"].([]map[string]any) {
 			cells := r["cells"].(map[string]any)
-			format, ok := cells["format"].(string)
+			format, ok := cells["format"].(wire.Text)
 			if !ok {
 				continue
 			}
-			out = append(out, format+" — "+cells["needs"].(string))
+			out = append(out, format["en"]+" — "+cells["needs"].(wire.Text)["en"])
 		}
 	}
 	return out
 }
+
+// as is a field the way filex's renderer shows it to a reader in lang: the
+// label, help, placeholder and option labels of that language.
+func as(lang string, f wire.Field) wire.Field { return f.Localized(lang) }
 
 // reviewRows reads the last step's table as {row id: "en | tr"}.
 func reviewRows(t *testing.T, s *wire.Surface) map[string]string {
@@ -344,8 +348,8 @@ func TestTheFormatStepGroupsByCategory(t *testing.T) {
 	seen := map[string]bool{}
 	for _, g := range groups {
 		seen[g.Key] = true
-		if lbl, ok := want[g.Key]; ok && g.Label != lbl {
-			t.Errorf("group %q is headed %q, not %q", g.Key, g.Label, lbl)
+		if lbl, ok := want[g.Key]; ok && as("tr", g).Label != lbl {
+			t.Errorf("group %q is headed %q, not %q", g.Key, as("tr", g).Label, lbl)
 		}
 		if len(g.Options) == 0 {
 			t.Errorf("group %q has no buttons; it should not be on the screen at all", g.Key)
@@ -384,11 +388,11 @@ func TestOpenWithEngines(t *testing.T) {
 	}
 	for _, g := range targetGroups(t, w.last) {
 		for _, o := range g.Options {
-			if o.Value == "jpg" && (g.Label != "Görsel" || o.Label != "JPEG") {
-				t.Errorf("jpg is %q under %q", o.Label, g.Label)
+			if o.Value == "jpg" && (as("tr", g).Label != "Görsel" || o.Label != "JPEG") {
+				t.Errorf("jpg is %q under %q", o.Label, as("tr", g).Label)
 			}
-			if o.Value == "pdf" && (g.Label != "Belge" || o.Label != "PDF") {
-				t.Errorf("pdf is %q under %q", o.Label, g.Label)
+			if o.Value == "pdf" && (as("tr", g).Label != "Belge" || o.Label != "PDF") {
+				t.Errorf("pdf is %q under %q", o.Label, as("tr", g).Label)
 			}
 		}
 	}
@@ -627,7 +631,7 @@ func TestTheTurkishScreenSaysItInTurkish(t *testing.T) {
 	w := open(t, nil, "tr", "notes.md")
 	var labels []string
 	for _, g := range targetGroups(t, w.last) {
-		for _, o := range g.Options {
+		for _, o := range as("tr", g).Options {
 			labels = append(labels, o.Label)
 		}
 	}
@@ -679,7 +683,7 @@ func TestTheWizardSpeaksSpanishGermanAndFrench(t *testing.T) {
 			w := open(t, nil, c.lang, "notes.md")
 			var labels []string
 			for _, g := range targetGroups(t, w.last) {
-				for _, o := range g.Options {
+				for _, o := range as(c.lang, g).Options {
 					labels = append(labels, o.Label)
 				}
 			}
@@ -697,11 +701,11 @@ func TestTheWizardSpeaksSpanishGermanAndFrench(t *testing.T) {
 
 			// A photo: the image group's heading and a knob's label and help.
 			w = open(t, graph.AllEngines(), c.lang, "photo.png")
-			if g, ok := findGroup(targetGroups(t, w.last), CategoryField(formats.Image, "")); !ok || g.Label != c.image {
+			if g, ok := findGroup(targetGroups(t, w.last), CategoryField(formats.Image, "")); !ok || as(c.lang, g).Label != c.image {
 				t.Errorf("the image group should be headed %q: %+v", c.image, g)
 			}
 			s = w.pick("jpg")
-			q := fieldByKey(t, s, "quality")
+			q := as(c.lang, fieldByKey(t, s, "quality"))
 			if q.Label != c.quality || q.Help == "" || q.Help == i18n.S("en", "option.quality.help") {
 				t.Errorf("the quality knob should be labelled %q with its help in %s: %+v", c.quality, c.lang, q)
 			}
@@ -709,7 +713,7 @@ func TestTheWizardSpeaksSpanishGermanAndFrench(t *testing.T) {
 			// A PDF page range: the placeholder is a word in the language.
 			w = open(t, graph.AllEngines(), c.lang, "doc.pdf")
 			s = w.pick("png")
-			if p := fieldByKey(t, s, "pages"); p.Placeholder != c.pages {
+			if p := as(c.lang, fieldByKey(t, s, "pages")); p.Placeholder != c.pages {
 				t.Errorf("the pages placeholder should be %q: %q", c.pages, p.Placeholder)
 			}
 		})
@@ -1093,7 +1097,7 @@ func TestEveryBooleanKnobIsTwoButtons(t *testing.T) {
 			continue
 		}
 		bools++
-		f := knobField(key, "", "en")
+		f := knobField(key, "")
 		if f.Style != "choice" {
 			t.Errorf("%s is drawn as %q; a decision is two buttons", key, f.Style)
 		}
@@ -1111,18 +1115,29 @@ func TestEveryBooleanKnobIsTwoButtons(t *testing.T) {
 	}
 }
 
-// A knob's label and its help travel in the language the call asked for
-// (they are plain strings on the wire), and neither may be missing — in any
-// of the languages the converter ships.
+// A knob's label, its help and its answers travel in EVERY language the
+// converter ships (maps on the wire, which the reader's filex resolves), and
+// none may be missing — Localized would quietly fall back to English, so this
+// reads the maps themselves.
 func TestEveryKnobIsExplainedInEveryLanguage(t *testing.T) {
 	for _, key := range options.Order {
-		for _, locale := range i18n.Langs {
-			f := knobField(key, "", locale)
-			if strings.TrimSpace(f.Label) == "" {
-				t.Errorf("%s has no %s label", key, locale)
+		for _, variant := range []string{"", "video", "pdf"} {
+			f := knobField(key, variant)
+			if f.I18n == nil {
+				t.Fatalf("%s carries its words as one string; they must be a Text", key)
 			}
-			if strings.TrimSpace(f.Help) == "" {
-				t.Errorf("%s has no %s help; every other knob explains itself", key, locale)
+			for _, locale := range i18n.Langs {
+				if strings.TrimSpace(f.I18n.Label[locale]) == "" {
+					t.Errorf("%s has no %s label", key, locale)
+				}
+				if strings.TrimSpace(f.I18n.Help[locale]) == "" {
+					t.Errorf("%s has no %s help; every other knob explains itself", key, locale)
+				}
+				for _, o := range f.Options {
+					if strings.TrimSpace(o.LabelI18n[locale]) == "" {
+						t.Errorf("%s: the answer %q has no %s label", key, o.Value, locale)
+					}
+				}
 			}
 		}
 	}

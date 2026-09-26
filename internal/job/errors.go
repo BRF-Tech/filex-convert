@@ -1,8 +1,11 @@
 package job
 
 import (
+	"strings"
+
 	"github.com/brf-tech/filex/backend/pkg/pluginkit/wire"
 
+	"github.com/brf-tech/filex-convert/internal/graph"
 	"github.com/brf-tech/filex-convert/internal/i18n"
 )
 
@@ -31,9 +34,15 @@ var Codes = []Code{CodeUnknownFormat, CodeNoTarget, CodeNoRoute, CodeEngineMissi
 
 // Error is one file's failure with a code and a detail line.
 type Error struct {
-	Code   Code
-	Detail string // engine stderr tail, decoder message, … (English, technical)
+	Code Code
+	// Detail is the technical line for the plugin's LOG (engine stderr tail,
+	// decoder message …). It is English and it is not for a person: see Text.
+	Detail string
 	File   string
+	// Engines are the engines this failure is about — the one that failed,
+	// or the ones the route would need — by id. A person reads them by their
+	// product name ("ImageMagick"), which is the same in every language.
+	Engines []string
 }
 
 func (e *Error) Error() string {
@@ -44,24 +53,26 @@ func (e *Error) Error() string {
 }
 
 // Text renders the failure for people in every language the converter
-// ships (internal/i18n, key `error.<code>`), with the file name and a short
-// detail when there is one.
+// ships (internal/i18n, key `error.<code>`), with the file name and, when
+// the failure is an engine's, that engine's name.
+//
+// ⚠⚠ Never the Detail. It used to follow the reason in brackets, and it is
+// whatever the engine or a Go decoder said, in English: a Turkish tray read
+// "foto.png: dönüşüm başarısız oldu (png: invalid format: not a PNG file)"
+// and "dönüştürücü başarısız oldu (ffmpeg exit 1: Conversion failed!)" —
+// a sentence the reader cannot act on, half in a language they did not pick
+// (filex's own rule, lesson #292: no raw server text on a person's screen).
+// The detail goes to the plugin's log (Run and runMerged write Error()),
+// where the administrator who can act on it reads it.
 func (e *Error) Text() wire.Text {
 	return i18n.Each(func(lang string) string {
 		s := i18n.S(lang, "error."+string(e.Code))
-		if e.Detail != "" && (e.Code == CodeEngineMissing || e.Code == CodeConvertFailed || e.Code == CodeEngineFailed) {
-			s = i18n.S(lang, "error.with_detail", "message", s, "detail", clip(e.Detail, 120))
+		if len(e.Engines) > 0 && (e.Code == CodeEngineMissing || e.Code == CodeEngineFailed) {
+			s = i18n.S(lang, "error.with_detail", "message", s, "detail", strings.Join(graph.EngineNames(e.Engines), ", "))
 		}
 		if e.File != "" {
 			s = i18n.S(lang, "error.with_file", "file", e.File, "message", s)
 		}
 		return s
 	})
-}
-
-func clip(s string, n int) string {
-	if len(s) <= n {
-		return s
-	}
-	return s[:n] + "…"
 }

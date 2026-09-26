@@ -384,8 +384,12 @@ func rowCells(t *testing.T, n wire.Node) []map[string]string {
 		cells, _ := r["cells"].(map[string]any)
 		m := map[string]string{}
 		for k, v := range cells {
-			s, _ := v.(string)
-			m[k] = s
+			switch x := v.(type) {
+			case string:
+				m[k] = x
+			case wire.Text:
+				m[k] = x["en"]
+			}
 		}
 		out = append(out, m)
 	}
@@ -523,8 +527,8 @@ func TestOptionsScreenHasTheSameShapeInEveryLanguage(t *testing.T) {
 			if !ok {
 				continue
 			}
-			if want := i18n.S(lang, "category."+string(c)); grp.Label != want {
-				t.Fatalf("%s: the %s group is headed %q, want %q", lang, c, grp.Label, want)
+			if want := i18n.S(lang, "category."+string(c)); grp.Localized(lang).Label != want {
+				t.Fatalf("%s: the %s group is headed %q, want %q", lang, c, grp.Localized(lang).Label, want)
 			}
 		}
 		a, _ := plugintest.PrimaryAction(byLocale[lang])

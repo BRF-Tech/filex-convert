@@ -70,19 +70,19 @@ func runMerged(h Host, in *wire.ActionRunInput, target string, params options.Op
 		src, stem, ok := formats.Detect(f.Name)
 		if !ok {
 			e := &Error{Code: CodeUnknownFormat, File: f.Name}
-			return &wire.ActionRunOutput{OK: false, Message: e.Text()}
+			return failed(h, e)
 		}
 		sources = append(sources, src.ID)
 		stems = append(stems, stem)
 	}
 	if !CanMerge(sources, target) {
 		e := &Error{Code: CodeNoRoute, Detail: "merge into " + target}
-		return &wire.ActionRunOutput{OK: false, Message: e.Text()}
+		return failed(h, e)
 	}
 	for _, eng := range MergeEngines(target) {
 		if !in.Engines[eng] {
-			e := &Error{Code: CodeEngineMissing, Detail: eng}
-			return &wire.ActionRunOutput{OK: false, Message: e.Text()}
+			e := &Error{Code: CodeEngineMissing, Detail: eng, Engines: []string{eng}}
+			return failed(h, e)
 		}
 	}
 	name := stems[0] + "." + primaryExt(target)
@@ -90,15 +90,15 @@ func runMerged(h Host, in *wire.ActionRunInput, target string, params options.Op
 	var datas [][]byte
 	var names []string
 	for i, f := range in.Inputs {
-		h.Progress(int64(i), total, progressLine(f.Name, target, in.Locale))
+		h.Progress(int64(i), total, progressLine(f.Name, target))
 		if size := h.InputSize(f.Ref); size > purego.MaxInput {
 			e := &Error{Code: CodeTooLarge, File: f.Name}
-			return &wire.ActionRunOutput{OK: false, Message: e.Text()}
+			return failed(h, e)
 		}
 		data, err := h.ReadInput(f.Ref)
 		if err != nil {
 			e := &Error{Code: CodeReadFailed, File: f.Name, Detail: err.Error()}
-			return &wire.ActionRunOutput{OK: false, Message: e.Text()}
+			return failed(h, e)
 		}
 		datas = append(datas, data)
 		names = append(names, f.Name)
@@ -112,7 +112,7 @@ func runMerged(h Host, in *wire.ActionRunInput, target string, params options.Op
 			pic, perr := purego.PictureOf(sources[i], d)
 			if perr != nil {
 				e := &Error{Code: CodeConvertFailed, File: names[i], Detail: perr.Error()}
-				return &wire.ActionRunOutput{OK: false, Message: e.Text()}
+				return failed(h, e)
 			}
 			pics = append(pics, pic)
 		}
@@ -124,12 +124,12 @@ func runMerged(h Host, in *wire.ActionRunInput, target string, params options.Op
 	}
 	if err != nil {
 		e := &Error{Code: CodeConvertFailed, Detail: err.Error()}
-		return &wire.ActionRunOutput{OK: false, Message: e.Text()}
+		return failed(h, e)
 	}
 	ref, err := h.WriteOutput(name, out)
 	if err != nil {
 		e := &Error{Code: CodeWriteFailed, Detail: err.Error()}
-		return &wire.ActionRunOutput{OK: false, Message: e.Text()}
+		return failed(h, e)
 	}
 	h.Progress(total, total, "")
 	return &wire.ActionRunOutput{OK: true, Outputs: []wire.OutputRef{ref}, Message: mergedSummary(len(in.Inputs), target)}
@@ -144,7 +144,7 @@ func mergedVideo(h Host, in *wire.ActionRunInput, sources, names []string, datas
 			conv, err := purego.Convert(sources[i], "png", d, params)
 			if err != nil {
 				e := &Error{Code: CodeConvertFailed, File: names[i], Detail: err.Error()}
-				return &wire.ActionRunOutput{OK: false, Message: e.Text()}
+				return failed(h, e)
 			}
 			frame = conv
 		}
@@ -152,19 +152,19 @@ func mergedVideo(h Host, in *wire.ActionRunInput, sources, names []string, datas
 		ref, err := h.WriteOutput(fname, frame)
 		if err != nil {
 			e := &Error{Code: CodeWriteFailed, Detail: err.Error()}
-			return &wire.ActionRunOutput{OK: false, Message: e.Text()}
+			return failed(h, e)
 		}
 		inputs[fname] = ref.Ref
 	}
 	inv := engines.Slideshow(target, len(datas), "out", params)
 	res, err := h.EngineRun(pluginkit.EngineRequest{Engine: inv.Engine, Args: inv.Args, Inputs: inputs, Outputs: inv.Outputs, TimeoutS: inv.TimeoutS})
 	if err != nil {
-		e := &Error{Code: CodeEngineFailed, Detail: err.Error()}
-		return &wire.ActionRunOutput{OK: false, Message: e.Text()}
+		e := &Error{Code: CodeEngineFailed, Detail: err.Error(), Engines: []string{inv.Engine}}
+		return failed(h, e)
 	}
 	if res.Exit != 0 || len(res.Outputs) == 0 {
-		e := &Error{Code: CodeEngineFailed, Detail: "ffmpeg exit " + strconv.Itoa(res.Exit) + ": " + lastLine(res.StderrTail)}
-		return &wire.ActionRunOutput{OK: false, Message: e.Text()}
+		e := &Error{Code: CodeEngineFailed, Detail: "ffmpeg exit " + strconv.Itoa(res.Exit) + ": " + lastLine(res.StderrTail), Engines: []string{inv.Engine}}
+		return failed(h, e)
 	}
 	pick := res.Outputs[0]
 	for _, o := range res.Outputs {
@@ -175,6 +175,17 @@ func mergedVideo(h Host, in *wire.ActionRunInput, sources, names []string, datas
 	total := int64(len(in.Inputs))
 	h.Progress(total, total, "")
 	return &wire.ActionRunOutput{OK: true, Outputs: []wire.OutputRef{{Ref: pick.Ref, Name: outName}}, Message: mergedSummary(len(in.Inputs), target)}
+}
+
+// failed ends a merged run on one failure: the person reads the reason in
+// their language (Error.Text), the log keeps the technical detail.
+func failed(h Host, e *Error) *wire.ActionRunOutput {
+	line := e.Error()
+	if e.File != "" {
+		line = e.File + ": " + line
+	}
+	h.Log("warn", "merge: "+line)
+	return &wire.ActionRunOutput{OK: false, Message: e.Text()}
 }
 
 func pad3(n int) string {

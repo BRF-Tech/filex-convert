@@ -85,98 +85,224 @@
           {
             "key": "target_image",
             "type": "select",
-            "label": "Image",
             "options": [
               {
                 "value": "jpg",
-                "label": "JPEG"
+                "label": {
+                  "de": "JPEG",
+                  "en": "JPEG",
+                  "es": "JPEG",
+                  "fr": "JPEG",
+                  "tr": "JPEG"
+                }
               },
               {
                 "value": "gif",
-                "label": "GIF"
+                "label": {
+                  "de": "GIF",
+                  "en": "GIF",
+                  "es": "GIF",
+                  "fr": "GIF",
+                  "tr": "GIF"
+                }
               },
               {
                 "value": "bmp",
-                "label": "BMP"
+                "label": {
+                  "de": "BMP",
+                  "en": "BMP",
+                  "es": "BMP",
+                  "fr": "BMP",
+                  "tr": "BMP"
+                }
               },
               {
                 "value": "tiff",
-                "label": "TIFF"
+                "label": {
+                  "de": "TIFF",
+                  "en": "TIFF",
+                  "es": "TIFF",
+                  "fr": "TIFF",
+                  "tr": "TIFF"
+                }
               },
               {
                 "value": "webp",
-                "label": "WebP"
+                "label": {
+                  "de": "WebP",
+                  "en": "WebP",
+                  "es": "WebP",
+                  "fr": "WebP",
+                  "tr": "WebP"
+                }
               },
               {
                 "value": "ico",
-                "label": "Icon (.ico)"
+                "label": {
+                  "de": "Symbol (.ico)",
+                  "en": "Icon (.ico)",
+                  "es": "Icono (.ico)",
+                  "fr": "Icône (.ico)",
+                  "tr": "Simge (.ico)"
+                }
               },
               {
                 "value": "svg",
-                "label": "SVG"
+                "label": {
+                  "de": "SVG",
+                  "en": "SVG",
+                  "es": "SVG",
+                  "fr": "SVG",
+                  "tr": "SVG"
+                }
               },
               {
                 "value": "qoi",
-                "label": "QOI"
+                "label": {
+                  "de": "QOI",
+                  "en": "QOI",
+                  "es": "QOI",
+                  "fr": "QOI",
+                  "tr": "QOI"
+                }
               },
               {
                 "value": "pnm",
-                "label": "Netpbm (.ppm/.pgm/.pbm)"
+                "label": {
+                  "de": "Netpbm (.ppm/.pgm/.pbm)",
+                  "en": "Netpbm (.ppm/.pgm/.pbm)",
+                  "es": "Netpbm (.ppm/.pgm/.pbm)",
+                  "fr": "Netpbm (.ppm/.pgm/.pbm)",
+                  "tr": "Netpbm (.ppm/.pgm/.pbm)"
+                }
               },
               {
                 "value": "tga",
-                "label": "Targa (.tga)"
+                "label": {
+                  "de": "Targa (.tga)",
+                  "en": "Targa (.tga)",
+                  "es": "Targa (.tga)",
+                  "fr": "Targa (.tga)",
+                  "tr": "Targa (.tga)"
+                }
               }
-            ]
+            ],
+            "label": {
+              "de": "Bild",
+              "en": "Image",
+              "es": "Imagen",
+              "fr": "Image",
+              "tr": "Görsel"
+            }
           },
           {
             "key": "target_document",
             "type": "select",
-            "label": "Document",
             "options": [
               {
                 "value": "pdf",
-                "label": "PDF"
+                "label": {
+                  "de": "PDF",
+                  "en": "PDF",
+                  "es": "PDF",
+                  "fr": "PDF",
+                  "tr": "PDF"
+                }
               }
-            ]
+            ],
+            "label": {
+              "de": "Dokument",
+              "en": "Document",
+              "es": "Documento",
+              "fr": "Document",
+              "tr": "Belge"
+            }
           },
           {
             "key": "target_archive",
             "type": "select",
-            "label": "Archive",
             "options": [
               {
                 "value": "zip",
-                "label": "ZIP"
+                "label": {
+                  "de": "ZIP",
+                  "en": "ZIP",
+                  "es": "ZIP",
+                  "fr": "ZIP",
+                  "tr": "ZIP"
+                }
               },
               {
                 "value": "tar",
-                "label": "TAR"
+                "label": {
+                  "de": "TAR",
+                  "en": "TAR",
+                  "es": "TAR",
+                  "fr": "TAR",
+                  "tr": "TAR"
+                }
               },
               {
                 "value": "tgz",
-                "label": "TAR + gzip (.tar.gz)"
+                "label": {
+                  "de": "TAR + gzip (.tar.gz)",
+                  "en": "TAR + gzip (.tar.gz)",
+                  "es": "TAR + gzip (.tar.gz)",
+                  "fr": "TAR + gzip (.tar.gz)",
+                  "tr": "TAR + gzip (.tar.gz)"
+                }
               },
               {
                 "value": "tzst",
-                "label": "TAR + zstd (.tar.zst)"
+                "label": {
+                  "de": "TAR + zstd (.tar.zst)",
+                  "en": "TAR + zstd (.tar.zst)",
+                  "es": "TAR + zstd (.tar.zst)",
+                  "fr": "TAR + zstd (.tar.zst)",
+                  "tr": "TAR + zstd (.tar.zst)"
+                }
               },
               {
                 "value": "txz",
-                "label": "TAR + xz (.tar.xz)"
+                "label": {
+                  "de": "TAR + xz (.tar.xz)",
+                  "en": "TAR + xz (.tar.xz)",
+                  "es": "TAR + xz (.tar.xz)",
+                  "fr": "TAR + xz (.tar.xz)",
+                  "tr": "TAR + xz (.tar.xz)"
+                }
               }
-            ]
+            ],
+            "label": {
+              "de": "Archiv",
+              "en": "Archive",
+              "es": "Archivo comprimido",
+              "fr": "Archive",
+              "tr": "Arşiv"
+            }
           },
           {
             "key": "target_text",
             "type": "select",
-            "label": "Text",
             "options": [
               {
                 "value": "txt",
-                "label": "Plain text (.txt)"
+                "label": {
+                  "de": "Reiner Text (.txt)",
+                  "en": "Plain text (.txt)",
+                  "es": "Texto sin formato (.txt)",
+                  "fr": "Texte brut (.txt)",
+                  "tr": "Düz metin (.txt)"
+                }
               }
-            ]
+            ],
+            "label": {
+              "de": "Text",
+              "en": "Text",
+              "es": "Texto",
+              "fr": "Texte",
+              "tr": "Metin"
+            }
           }
         ],
         "values": {}
@@ -214,81 +340,213 @@
         "columns": [
           {
             "key": "format",
-            "label": "Format"
+            "label": {
+              "de": "Format",
+              "en": "Format",
+              "es": "Formato",
+              "fr": "Format",
+              "tr": "Biçim"
+            }
           },
           {
             "key": "needs",
-            "label": "Needs"
+            "label": {
+              "de": "Benötigt",
+              "en": "Needs",
+              "es": "Requiere",
+              "fr": "Requis",
+              "tr": "Gerekli"
+            }
           }
         ],
         "rows": [
           {
             "cells": {
-              "format": "Image · AVIF",
-              "needs": "needs ImageMagick"
+              "format": {
+                "de": "Bild · AVIF",
+                "en": "Image · AVIF",
+                "es": "Imagen · AVIF",
+                "fr": "Image · AVIF",
+                "tr": "Görsel · AVIF"
+              },
+              "needs": {
+                "de": "benötigt ImageMagick",
+                "en": "needs ImageMagick",
+                "es": "requiere ImageMagick",
+                "fr": "requiert ImageMagick",
+                "tr": "gerekli: ImageMagick"
+              }
             },
             "id": "avif"
           },
           {
             "cells": {
-              "format": "Image · Photoshop (.psd)",
-              "needs": "needs ImageMagick"
+              "format": {
+                "de": "Bild · Photoshop (.psd)",
+                "en": "Image · Photoshop (.psd)",
+                "es": "Imagen · Photoshop (.psd)",
+                "fr": "Image · Photoshop (.psd)",
+                "tr": "Görsel · Photoshop (.psd)"
+              },
+              "needs": {
+                "de": "benötigt ImageMagick",
+                "en": "needs ImageMagick",
+                "es": "requiere ImageMagick",
+                "fr": "requiert ImageMagick",
+                "tr": "gerekli: ImageMagick"
+              }
             },
             "id": "psd"
           },
           {
             "cells": {
-              "format": "Image · DirectDraw Surface (.dds)",
-              "needs": "needs ImageMagick"
+              "format": {
+                "de": "Bild · DirectDraw Surface (.dds)",
+                "en": "Image · DirectDraw Surface (.dds)",
+                "es": "Imagen · DirectDraw Surface (.dds)",
+                "fr": "Image · DirectDraw Surface (.dds)",
+                "tr": "Görsel · DirectDraw Surface (.dds)"
+              },
+              "needs": {
+                "de": "benötigt ImageMagick",
+                "en": "needs ImageMagick",
+                "es": "requiere ImageMagick",
+                "fr": "requiert ImageMagick",
+                "tr": "gerekli: ImageMagick"
+              }
             },
             "id": "dds"
           },
           {
             "cells": {
-              "format": "Image · OpenEXR (.exr)",
-              "needs": "needs ImageMagick"
+              "format": {
+                "de": "Bild · OpenEXR (.exr)",
+                "en": "Image · OpenEXR (.exr)",
+                "es": "Imagen · OpenEXR (.exr)",
+                "fr": "Image · OpenEXR (.exr)",
+                "tr": "Görsel · OpenEXR (.exr)"
+              },
+              "needs": {
+                "de": "benötigt ImageMagick",
+                "en": "needs ImageMagick",
+                "es": "requiere ImageMagick",
+                "fr": "requiert ImageMagick",
+                "tr": "gerekli: ImageMagick"
+              }
             },
             "id": "exr"
           },
           {
             "cells": {
-              "format": "Video · MP4",
-              "needs": "needs FFmpeg"
+              "format": {
+                "de": "Video · MP4",
+                "en": "Video · MP4",
+                "es": "Video · MP4",
+                "fr": "Vidéo · MP4",
+                "tr": "Video · MP4"
+              },
+              "needs": {
+                "de": "benötigt FFmpeg",
+                "en": "needs FFmpeg",
+                "es": "requiere FFmpeg",
+                "fr": "requiert FFmpeg",
+                "tr": "gerekli: FFmpeg"
+              }
             },
             "id": "mp4"
           },
           {
             "cells": {
-              "format": "Video · Matroska (.mkv)",
-              "needs": "needs FFmpeg"
+              "format": {
+                "de": "Video · Matroska (.mkv)",
+                "en": "Video · Matroska (.mkv)",
+                "es": "Video · Matroska (.mkv)",
+                "fr": "Vidéo · Matroska (.mkv)",
+                "tr": "Video · Matroska (.mkv)"
+              },
+              "needs": {
+                "de": "benötigt FFmpeg",
+                "en": "needs FFmpeg",
+                "es": "requiere FFmpeg",
+                "fr": "requiert FFmpeg",
+                "tr": "gerekli: FFmpeg"
+              }
             },
             "id": "mkv"
           },
           {
             "cells": {
-              "format": "Video · WebM",
-              "needs": "needs FFmpeg"
+              "format": {
+                "de": "Video · WebM",
+                "en": "Video · WebM",
+                "es": "Video · WebM",
+                "fr": "Vidéo · WebM",
+                "tr": "Video · WebM"
+              },
+              "needs": {
+                "de": "benötigt FFmpeg",
+                "en": "needs FFmpeg",
+                "es": "requiere FFmpeg",
+                "fr": "requiert FFmpeg",
+                "tr": "gerekli: FFmpeg"
+              }
             },
             "id": "webm"
           },
           {
             "cells": {
-              "format": "Video · QuickTime (.mov)",
-              "needs": "needs FFmpeg"
+              "format": {
+                "de": "Video · QuickTime (.mov)",
+                "en": "Video · QuickTime (.mov)",
+                "es": "Video · QuickTime (.mov)",
+                "fr": "Vidéo · QuickTime (.mov)",
+                "tr": "Video · QuickTime (.mov)"
+              },
+              "needs": {
+                "de": "benötigt FFmpeg",
+                "en": "needs FFmpeg",
+                "es": "requiere FFmpeg",
+                "fr": "requiert FFmpeg",
+                "tr": "gerekli: FFmpeg"
+              }
             },
             "id": "mov"
           },
           {
             "cells": {
-              "format": "Document · PostScript (.ps)",
-              "needs": "needs Ghostscript"
+              "format": {
+                "de": "Dokument · PostScript (.ps)",
+                "en": "Document · PostScript (.ps)",
+                "es": "Documento · PostScript (.ps)",
+                "fr": "Document · PostScript (.ps)",
+                "tr": "Belge · PostScript (.ps)"
+              },
+              "needs": {
+                "de": "benötigt Ghostscript",
+                "en": "needs Ghostscript",
+                "es": "requiere Ghostscript",
+                "fr": "requiert Ghostscript",
+                "tr": "gerekli: Ghostscript"
+              }
             },
             "id": "ps"
           },
           {
             "cells": {
-              "format": "Document · EPS",
-              "needs": "needs Ghostscript"
+              "format": {
+                "de": "Dokument · EPS",
+                "en": "Document · EPS",
+                "es": "Documento · EPS",
+                "fr": "Document · EPS",
+                "tr": "Belge · EPS"
+              },
+              "needs": {
+                "de": "benötigt Ghostscript",
+                "en": "needs Ghostscript",
+                "es": "requiere Ghostscript",
+                "fr": "requiert Ghostscript",
+                "tr": "gerekli: Ghostscript"
+              }
             },
             "id": "eps"
           }

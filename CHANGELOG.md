@@ -7,6 +7,57 @@ is the one a tag must match.
 
 ## [Unreleased]
 
+## [0.1.1] — 2026-09-26
+
+### Fixed
+
+- **A Turkish reader reads Turkish, whatever language filex called the
+  converter in.** With filex embedded (the `<filex-explorer>` web component
+  in a host page, `locale: "tr"`) on an account whose saved language is
+  English, the wizard came out half English: its steps, headings and
+  buttons were Turkish, while the category headings ("Image", "Document"),
+  the described format names ("Plain text (.txt)", "Icon (.ico)"),
+  "(re-encode)", every knob's label, help and answers ("Quality", "Preset",
+  "Medium (default)", "Combine into one file"), the page-range placeholder
+  ("all") and the administrator's grey list were English. filex hands a
+  screen the host's guess at the reader's language (the account's saved
+  language before the window's own), and those words were picked for that
+  guess as single strings. Every word on the screen is now a Text in all
+  five languages — a field's label, help and placeholder and every button
+  under it included — and the reader's own filex picks the language. The
+  reverse case (an English window on a Turkish account) is fixed by the
+  same change.
+- **A failure is said in the reader's language, all of it.** The reason
+  used to be followed by what the engine or the Go decoder said, in English
+  ("dönüşüm başarısız oldu (png: invalid format: not a PNG file)",
+  "dönüştürücü başarısız oldu (ffmpeg exit 1: Conversion failed!)"). The
+  person now reads the reason and, for an engine's failure, the engine's
+  name ("(FFmpeg)"); the technical line goes to the plugin's log, where an
+  administrator reads it — merged runs included, which logged nothing
+  before.
+- **The tray's progress line reads the same in every language.** It is one
+  string (the SDK's progress call carries no Text), so it names the target
+  by a name — "notes.md → TXT", "clip.avi → MP4" — never by a description
+  that is right for one reader only.
+- Turkish wording: "OpenDocument metni (.odt)", the preset, PDF/A, quality,
+  duration and picture help lines, "Baskı öncesi (300 dpi, çözünürlük
+  düşürülmez)" and the Combine step's sentence read as Turkish rather than
+  as translations.
+
+### Tests
+
+- `TestTheScreenIsTheReadersLanguageNotTheCalls` draws every step of the
+  wizard — every kind of knob, Combine, Where, a refused answer, the grey
+  list, the screens with no wizard — with the call in English and in
+  Turkish, reads each screen as a Turkish and as an English reader, and
+  fails on any word both read alike (names and numbers excepted) or any
+  English word inside the Turkish. Before the fix it failed on 82 of the
+  screens it draws, 655 strings in all.
+- `TestAFailureIsReadInTheReadersLanguage` and
+  `TestTheTrayLineReadsTheSameInEveryLanguage` do the same for a job's
+  message and its progress line; the catalogue check for English left
+  behind now covers Turkish too.
+
 ## [0.1.0] — 2026-09-21
 
 The first public release. Convert is an app plugin for filex 0.43.0 and
@@ -120,5 +171,6 @@ offered with the reason for each, is `MATRIX.md`.
   renderer's rules, every language side by side, the grey list, a
   conversion end to end and golden screens.
 
-[Unreleased]: https://github.com/BRF-Tech/filex-convert/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/BRF-Tech/filex-convert/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/BRF-Tech/filex-convert/releases/tag/v0.1.1
 [0.1.0]: https://github.com/BRF-Tech/filex-convert/releases/tag/v0.1.0

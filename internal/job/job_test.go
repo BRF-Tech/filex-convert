@@ -215,10 +215,10 @@ func TestEngineMissing(t *testing.T) {
 	if out.OK {
 		t.Fatal("should fail")
 	}
-	if !strings.Contains(out.Message["en"], "needs an engine this server does not have (imagemagick)") {
+	if !strings.Contains(out.Message["en"], "needs an engine this server does not have (ImageMagick)") {
 		t.Errorf("en %q", out.Message["en"])
 	}
-	if !strings.Contains(out.Message["tr"], "bu sunucuda olmayan bir motor gerekiyor (imagemagick)") {
+	if !strings.Contains(out.Message["tr"], "bu sunucuda olmayan bir motor gerekiyor (ImageMagick)") {
 		t.Errorf("tr %q", out.Message["tr"])
 	}
 	if len(h.engines) != 0 {
@@ -289,8 +289,20 @@ func TestRetryExhausted(t *testing.T) {
 	if len(h.engines) != 2 {
 		t.Errorf("exactly one retry expected, got %v", h.engines)
 	}
-	if !strings.Contains(out.Message["en"], "the converter failed (poppler exit 1: boom)") && !strings.Contains(out.Message["en"], "the converter failed (poppler exit 2: boom)") {
+	// The person reads which engine failed, by its name; the exit code and
+	// the engine's own words are the log's (Error.Text says why).
+	if !strings.Contains(out.Message["en"], "the converter failed (Poppler)") || strings.Contains(out.Message["en"], "boom") {
 		t.Errorf("en %q", out.Message["en"])
+	}
+	if !strings.Contains(out.Message["tr"], "dönüştürücü başarısız oldu (Poppler)") {
+		t.Errorf("tr %q", out.Message["tr"])
+	}
+	logged := false
+	for _, l := range h.logs {
+		logged = logged || strings.Contains(l, "poppler exit 2: boom")
+	}
+	if !logged {
+		t.Errorf("the engine's own words belong in the log: %v", h.logs)
 	}
 }
 
@@ -392,9 +404,12 @@ func TestReadFailure(t *testing.T) {
 }
 
 func TestErrorTextAndUnwrap(t *testing.T) {
-	e := &Error{Code: CodeEngineFailed, File: "x.avi", Detail: strings.Repeat("y", 200)}
-	if !strings.HasSuffix(e.Text()["en"], "…)") {
-		t.Errorf("detail not clipped: %q", e.Text()["en"])
+	e := &Error{Code: CodeEngineFailed, File: "x.avi", Detail: strings.Repeat("y", 200), Engines: []string{graph.FFmpeg}}
+	if got := e.Text()["en"]; got != "x.avi: the converter failed (FFmpeg)" {
+		t.Errorf("a person reads the reason and the engine's name, not the detail: %q", got)
+	}
+	if got := e.Text()["tr"]; got != "x.avi: dönüştürücü başarısız oldu (FFmpeg)" {
+		t.Errorf("tr %q", got)
 	}
 	if e.Error() != "engine_failed: "+strings.Repeat("y", 200) {
 		t.Errorf("Error() %q", e.Error())
@@ -496,34 +511,33 @@ func TestTheJobNamesTheFormatInEachLanguage(t *testing.T) {
 	if got := mergedSummary(2, "ico"); got["tr"] != "2 dosya tek Simge (.ico) dosyasında birleştirildi" {
 		t.Errorf("merged tr %q", got["tr"])
 	}
-	if got := progressLine("a.md", "txt", "tr"); got != "a.md → Düz metin (.txt)" {
-		t.Errorf("tray tr %q", got)
-	}
-	if got := progressLine("a.md", "txt", "en"); got != "a.md → Plain text (.txt)" {
-		t.Errorf("tray en %q", got)
+	// The tray line is ONE string, so it names the format by a name that
+	// reads the same for everybody (TestTheTrayLineReadsTheSameInEveryLanguage).
+	if got := progressLine("a.md", "txt"); got != "a.md → TXT" {
+		t.Errorf("tray %q", got)
 	}
 }
 
 // Spanish, German and French too (owner's decision, v0.43.0): the summary,
-// a partial failure with its reasons, the merge line and the tray line are
+// a partial failure with its reasons and the merge line are
 // each written in the reader's language, the format named in it.
 //
 // ⚠ The host still collapses every locale but Turkish to `en` before it
 // calls an app (filex feat/043-srvtext); these build the messages directly.
 func TestTheJobSpeaksSpanishGermanAndFrench(t *testing.T) {
 	done := summary(&Result{Done: 1}, "txt", 1)
-	partial := summary(&Result{Done: 1, Failed: 1, Errors: []*Error{{Code: CodeEngineMissing, Detail: "imagemagick", File: "a.heic"}}}, "png", 2)
+	partial := summary(&Result{Done: 1, Failed: 1, Errors: []*Error{{Code: CodeEngineMissing, Detail: "imagemagick", File: "a.heic", Engines: []string{graph.ImageMagick}}}}, "png", 2)
 	merged := mergedSummary(3, "ico")
-	for lang, want := range map[string][4]string{
+	for lang, want := range map[string][3]string{
 		"es": {"convertido a Texto sin formato (.txt)",
-			"1 de 2 convertidos a PNG — con errores: a.heic: requiere un motor que este servidor no tiene (imagemagick)",
-			"3 archivos combinados en un solo Icono (.ico)", "a.md → Texto sin formato (.txt)"},
+			"1 de 2 convertidos a PNG — con errores: a.heic: requiere un motor que este servidor no tiene (ImageMagick)",
+			"3 archivos combinados en un solo Icono (.ico)"},
 		"de": {"in Reiner Text (.txt) konvertiert",
-			"1 von 2 in PNG konvertiert – fehlgeschlagen: a.heic: benötigt eine Engine, die auf diesem Server fehlt (imagemagick)",
-			"3 Dateien zu einer Datei im Format Symbol (.ico) zusammengeführt", "a.md → Reiner Text (.txt)"},
+			"1 von 2 in PNG konvertiert – fehlgeschlagen: a.heic: benötigt eine Engine, die auf diesem Server fehlt (ImageMagick)",
+			"3 Dateien zu einer Datei im Format Symbol (.ico) zusammengeführt"},
 		"fr": {"converti en Texte brut (.txt)",
-			"1 sur 2 convertis en PNG — échecs : a.heic : nécessite un moteur absent de ce serveur (imagemagick)",
-			"3 fichiers combinés en un seul fichier Icône (.ico)", "a.md → Texte brut (.txt)"},
+			"1 sur 2 convertis en PNG — échecs : a.heic : nécessite un moteur absent de ce serveur (ImageMagick)",
+			"3 fichiers combinés en un seul fichier Icône (.ico)"},
 	} {
 		if done[lang] != want[0] {
 			t.Errorf("%s summary %q, want %q", lang, done[lang], want[0])
@@ -534,13 +548,6 @@ func TestTheJobSpeaksSpanishGermanAndFrench(t *testing.T) {
 		if merged[lang] != want[2] {
 			t.Errorf("%s merged %q, want %q", lang, merged[lang], want[2])
 		}
-		if got := progressLine("a.md", "txt", lang); got != want[3] {
-			t.Errorf("%s tray %q, want %q", lang, got, want[3])
-		}
-	}
-	// A host locale with a region is the same language.
-	if got := progressLine("a.md", "txt", "de-DE"); got != "a.md → Reiner Text (.txt)" {
-		t.Errorf("de-DE tray %q", got)
 	}
 }
 

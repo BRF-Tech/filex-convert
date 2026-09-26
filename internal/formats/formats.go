@@ -69,6 +69,19 @@ func (f Format) Names() map[string]string {
 	return i18n.Each(func(lang string) string { return f.Name(lang) })
 }
 
+// Neutral is the label that reads the same in EVERY language: the label
+// when it is a name ("PDF", "Matroska (.mkv)"), the extension in capitals
+// when the label describes ("TXT" for "Plain text (.txt)"). It is for the one
+// place the converter can hand filex a single string only — a job's progress
+// line (pluginkit.Progress) — where no language can be picked right for
+// everybody who may read it.
+func (f Format) Neutral() string {
+	if i18n.Has("format." + f.ID) {
+		return strings.ToUpper(f.Primary())
+	}
+	return f.Label
+}
+
 // All is the catalogue. Keep it sorted by category, then by id; the tests
 // check every id and extension is unique.
 var All = []Format{

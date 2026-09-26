@@ -101,6 +101,7 @@ func TestNothingIsLeftInEnglish(t *testing.T) {
 	// The words each language rightly shares with English: names, numbers,
 	// patterns of placeholders, and cognates ("Audio", "Format", "Document").
 	same := map[string][]string{
+		"tr": {"category.video"},
 		"es": {"category.audio", "category.video", "view.no"},
 		"de": {"category.audio", "category.text", "category.video", "view.blocked.format", "view.step.format"},
 		"fr": {"category.archive", "category.audio", "category.document", "category.image", "option.icon_sizes.app",
@@ -108,7 +109,10 @@ func TestNothingIsLeftInEnglish(t *testing.T) {
 	}
 	everywhere := []string{"error.with_detail", "error.with_file", "option.bitrate.rate", "option.icon_sizes.favicon"}
 	en := i18n.Catalogue("en")
-	for _, lang := range []string{"es", "de", "fr"} {
+	// ⚠ Turkish too. It was left out as "a source language, written in the
+	// code" — and a source language is exactly where an English value is
+	// pasted in and forgotten.
+	for _, lang := range []string{"tr", "es", "de", "fr"} {
 		ok := map[string]bool{}
 		for _, k := range append(same[lang], everywhere...) {
 			ok[k] = true
