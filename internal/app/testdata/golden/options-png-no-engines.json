@@ -312,11 +312,24 @@
       "type": "text",
       "props": {
         "text": {
-          "de": "Auf diesem Server nicht installiert: FFmpeg, ImageMagick, LibreOffice, Ghostscript, Poppler, librsvg.",
-          "en": "Not installed on this server: FFmpeg, ImageMagick, LibreOffice, Ghostscript, Poppler, librsvg.",
-          "es": "No instalado en este servidor: FFmpeg, ImageMagick, LibreOffice, Ghostscript, Poppler, librsvg.",
-          "fr": "Non installé sur ce serveur : FFmpeg, ImageMagick, LibreOffice, Ghostscript, Poppler, librsvg.",
-          "tr": "Bu sunucuda kurulu değil: FFmpeg, ImageMagick, LibreOffice, Ghostscript, Poppler, librsvg."
+          "de": "Auf diesem Server nicht installiert: FFmpeg, ImageMagick, Ghostscript, Poppler, librsvg.",
+          "en": "Not installed on this server: FFmpeg, ImageMagick, Ghostscript, Poppler, librsvg.",
+          "es": "No instalado en este servidor: FFmpeg, ImageMagick, Ghostscript, Poppler, librsvg.",
+          "fr": "Non installé sur ce serveur : FFmpeg, ImageMagick, Ghostscript, Poppler, librsvg.",
+          "tr": "Bu sunucuda kurulu değil: FFmpeg, ImageMagick, Ghostscript, Poppler, librsvg."
+        },
+        "tone": "muted"
+      }
+    },
+    {
+      "type": "text",
+      "props": {
+        "text": {
+          "de": "Office-Dokumente werden mit ONLYOFFICE konvertiert, und mit diesem Server ist keines verbunden. Ein Administrator verbindet es unter Externe Dienste.",
+          "en": "Office documents are converted by ONLYOFFICE, and none is connected to this server. An administrator connects it under External services.",
+          "es": "Los documentos de Office se convierten con ONLYOFFICE y no hay ninguno conectado a este servidor. Un administrador lo conecta en Servicios externos.",
+          "fr": "Les documents Office sont convertis par ONLYOFFICE, et aucun n’est connecté à ce serveur. Un administrateur le connecte dans Services externes.",
+          "tr": "Ofis belgeleri ONLYOFFICE ile dönüştürülür ve bu sunucuya bağlı bir ONLYOFFICE yok. Bir yönetici Dış servisler sayfasından bağlar."
         },
         "tone": "muted"
       }

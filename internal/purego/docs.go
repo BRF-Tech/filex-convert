@@ -9,8 +9,9 @@ import (
 
 // Document conversions through the block model: every reader reaches
 // every writer, so Word → PDF, EPUB → Markdown or HTML → DOCX all run in
-// the sandbox without LibreOffice. Fidelity is "text, structure, tables";
-// LibreOffice keeps layout when it is present and the graph prefers it.
+// the sandbox without the office engine. Fidelity is "text, structure,
+// tables"; the office engine (the connected ONLYOFFICE) keeps layout when it
+// is there and the graph prefers it.
 
 // DocReaders parse a document format into blocks.
 var DocReaders = map[string]func([]byte) (*doc.Document, error){

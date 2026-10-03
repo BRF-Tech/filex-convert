@@ -2,8 +2,8 @@ github.com/BurntSushi/toml v1.6.0 h1:dRaEfpa2VI55EwlIW72hMRHdWouJeRF7TPYhI+AUQjk
 github.com/BurntSushi/toml v1.6.0/go.mod h1:ukJfTF/6rtPPRCnwkur4qwRxa8vTRFBF0uk2lLoLwho=
 github.com/HugoSmits86/nativewebp v1.3.0 h1:n1egtEzSV4KwFtealr7dzdYq1wI/uj/bOQ/QcTcIyVE=
 github.com/HugoSmits86/nativewebp v1.3.0/go.mod h1:YNQuWenlVmSUUASVNhTDwf4d7FwYQGbGhklC8p72Vr8=
-github.com/brf-tech/filex/backend v0.43.0 h1:6z+q7kkSlccoO66JuzJxPwUa2nqu+VBH07754FpVjbs=
-github.com/brf-tech/filex/backend v0.43.0/go.mod h1:ZskevmioLUUOPP8+eirwUFGbZwxXEQ/em3633PTJCp4=
+github.com/brf-tech/filex/backend v0.50.0 h1:VnsTnEOOC3oklSBfhGqjJ0hD3jAwUMjw89zUmZFh5b0=
+github.com/brf-tech/filex/backend v0.50.0/go.mod h1:ZskevmioLUUOPP8+eirwUFGbZwxXEQ/em3633PTJCp4=
 github.com/extism/go-pdk v1.1.3 h1:hfViMPWrqjN6u67cIYRALZTZLk/enSPpNKa+rZ9X2SQ=
 github.com/extism/go-pdk v1.1.3/go.mod h1:Gz+LIU/YCKnKXhgge8yo5Yu1F/lbv7KtKFkiCSzW/P4=
 github.com/klauspost/compress v1.19.1 h1:VsB4HPswih7mmZ8WleSFQ75c/Ui1M4trX5oAsJnhSlk=

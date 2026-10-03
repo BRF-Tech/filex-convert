@@ -965,7 +965,7 @@ func knobField(key, variant string) wire.Field {
 // ⚠⚠ The owner's rule for anything that depends on what the server has
 // installed or configured: greyed WITH THE REASON for an administrator,
 // NOT SHOWN AT ALL to everybody else (filex lesson #292, `gateOnService`).
-// "Not installed on this server: ImageMagick, LibreOffice, librsvg" and a
+// "Not installed on this server: ImageMagick, librsvg" and a
 // table of formats each needing one were drawn for every account (v0.43.0
 // wave 2, 2026-09-22): a person who can do nothing about it read a list of
 // server programs they had never heard of, under the formats they CAN have.
@@ -1014,16 +1014,34 @@ func blockedList(sel selection) []wire.Node {
 
 // missingEnginesNote says which engines are absent and what each would
 // unlock, so the person knows why a format is not in the list.
+//
+// ⚠ The office engine is not a program on the server: it is the ONLYOFFICE
+// Document Server filex is connected to (filex 0.50). "Not installed on this
+// server: ONLYOFFICE" would send an administrator to install a package, so
+// it is said apart - connected under External services.
 func missingEnginesNote(sel selection) []wire.Node {
 	var missing []string
+	office := false
 	for _, e := range graph.Engines {
-		if !sel.engines[e] {
-			missing = append(missing, e)
+		if sel.engines[e] {
+			continue
 		}
+		if e == graph.Office {
+			office = true
+			continue
+		}
+		missing = append(missing, e)
 	}
-	if len(missing) == 0 || len(sel.blocked) == 0 || !sel.admin {
+	if (len(missing) == 0 && !office) || len(sel.blocked) == 0 || !sel.admin {
 		return nil
 	}
-	engines := strings.Join(graph.EngineNames(missing), ", ")
-	return []wire.Node{textNode(i18n.T("view.missing_engines", "engines", engines), "muted")}
+	var out []wire.Node
+	if len(missing) > 0 {
+		engines := strings.Join(graph.EngineNames(missing), ", ")
+		out = append(out, textNode(i18n.T("view.missing_engines", "engines", engines), "muted"))
+	}
+	if office {
+		out = append(out, textNode(i18n.T("view.office_not_connected"), "muted"))
+	}
+	return out
 }

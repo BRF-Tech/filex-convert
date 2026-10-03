@@ -88,8 +88,19 @@ func TestTheLanguagesKeepTheirTypography(t *testing.T) {
 		if strings.ContainsAny(v, "“”") {
 			t.Errorf("de: %q uses English quotation marks: %q", k, v)
 		}
-		if strings.Contains(v, " — ") {
-			t.Errorf("de: %q uses the English spaced em dash; German writes \" – \": %q", k, v)
+	}
+}
+
+// No long dash in anything a person reads, in any language: a plain hyphen
+// (the owner, 2026-10-02, for every filex surface). German wrote " \u2013 "
+// here until then, and en/tr/es/fr " \u2014 ".
+func TestNoLongDashInAnyLanguage(t *testing.T) {
+	const dashes = "\u2014\u2013\u2010\u2011\u2012\u2015\u2212"
+	for _, lang := range []string{"en", "tr", "es", "de", "fr"} {
+		for k, v := range i18n.Catalogue(lang) {
+			if strings.ContainsAny(v, dashes) {
+				t.Errorf("%s: %q holds a long dash; write a plain hyphen: %q", lang, k, v)
+			}
 		}
 	}
 }

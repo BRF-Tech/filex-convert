@@ -9,9 +9,9 @@ import (
 // fallback for something pure Go (or a better engine) already does gets a
 // higher cost so the planner prefers the cheaper path and RouteExcluding
 // still finds the alternative when the first one fails. Pure-Go document
-// edges that LibreOffice renders with better fidelity cost 1.6, so
-// LibreOffice wins when it is installed and the sandbox still delivers when
-// it is not.
+// edges that the office engine renders with better fidelity cost 1.6, so
+// the office engine wins when ONLYOFFICE is connected and the sandbox still
+// delivers when it is not.
 var edges = buildEdges()
 
 // GoImages are the raster ids the sandbox codes on its own (mirrors
@@ -223,7 +223,12 @@ func buildEdges() []Edge {
 		Edge{From: "ps", To: "png", Engine: ImageMagick, Cost: 1.5, Lossy: true, Options: []string{options.DPI}, Multi: true},
 	)
 
-	// ── LibreOffice ──
+	// ── The office engine (ONLYOFFICE, filex 0.50) ──
+	//
+	// Every edge here was measured on ONLYOFFICE Document Server 9.4 (filex
+	// 0.50, 2026-10-02). What it does not make is not an edge: no HTML from a
+	// spreadsheet (the conversion API answers -7) - the sandbox's own route
+	// makes that one, so the target stays on offer without the engine.
 	writers := []string{"docx", "doc", "odt", "rtf"}
 	writerTargets := []string{"pdf", "docx", "odt", "rtf", "html", "txt", "epub"}
 	lossyWriter := setOf("rtf", "txt", "html", "doc")
@@ -233,7 +238,7 @@ func buildEdges() []Edge {
 			if f == t {
 				continue
 			}
-			e := Edge{From: f, To: t, Engine: LibreOffice, Cost: 1, Lossy: lossyWriter[t]}
+			e := Edge{From: f, To: t, Engine: Office, Cost: 1, Lossy: lossyWriter[t]}
 			if t == "pdf" {
 				e.Options = pdfa
 			}
@@ -242,7 +247,7 @@ func buildEdges() []Edge {
 	}
 	for _, f := range []string{"html", "txt", "epub"} {
 		for _, t := range []string{"pdf", "docx", "odt"} {
-			e := Edge{From: f, To: t, Engine: LibreOffice, Cost: 1}
+			e := Edge{From: f, To: t, Engine: Office, Cost: 1}
 			if f == "epub" {
 				e.Cost = 1.2
 			}
@@ -253,14 +258,14 @@ func buildEdges() []Edge {
 		}
 	}
 	calcs := []string{"xlsx", "ods"}
-	calcTargets := []string{"pdf", "xlsx", "ods", "csv", "html"}
-	lossyCalc := setOf("csv", "html")
+	calcTargets := []string{"pdf", "xlsx", "ods", "csv"}
+	lossyCalc := setOf("csv")
 	for _, f := range calcs {
 		for _, t := range calcTargets {
 			if f == t {
 				continue
 			}
-			e := Edge{From: f, To: t, Engine: LibreOffice, Cost: 1, Lossy: lossyCalc[t]}
+			e := Edge{From: f, To: t, Engine: Office, Cost: 1, Lossy: lossyCalc[t]}
 			if t == "pdf" {
 				e.Options = pdfa
 			}
@@ -268,9 +273,9 @@ func buildEdges() []Edge {
 		}
 	}
 	add(
-		Edge{From: "csv", To: "xlsx", Engine: LibreOffice, Cost: 1.2},
-		Edge{From: "csv", To: "ods", Engine: LibreOffice, Cost: 1},
-		Edge{From: "csv", To: "pdf", Engine: LibreOffice, Cost: 1, Options: pdfa},
+		Edge{From: "csv", To: "xlsx", Engine: Office, Cost: 1.2},
+		Edge{From: "csv", To: "ods", Engine: Office, Cost: 1},
+		Edge{From: "csv", To: "pdf", Engine: Office, Cost: 1, Options: pdfa},
 	)
 	impress := []string{"pptx", "odp"}
 	for _, f := range impress {
@@ -278,7 +283,7 @@ func buildEdges() []Edge {
 			if f == t {
 				continue
 			}
-			e := Edge{From: f, To: t, Engine: LibreOffice, Cost: 1}
+			e := Edge{From: f, To: t, Engine: Office, Cost: 1}
 			if t == "pdf" {
 				e.Options = pdfa
 			}

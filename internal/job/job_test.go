@@ -16,6 +16,7 @@ import (
 	"github.com/brf-tech/filex/backend/pkg/pluginkit/wire"
 
 	"github.com/brf-tech/filex-convert/internal/graph"
+	"github.com/brf-tech/filex-convert/internal/i18n"
 	"github.com/brf-tech/filex-convert/internal/purego"
 )
 
@@ -163,10 +164,10 @@ func TestPartialFailure(t *testing.T) {
 		t.Errorf("names %v", out.Outputs)
 	}
 	en, tr := out.Message["en"], out.Message["tr"]
-	if !strings.HasPrefix(en, "2 of 3 converted to BMP — failed: b.xyz: unknown file type") {
+	if !strings.HasPrefix(en, "2 of 3 converted to BMP - failed: b.xyz: unknown file type") {
 		t.Errorf("en message %q", en)
 	}
-	if !strings.Contains(tr, "2 / 3 dosya BMP biçimine dönüştürüldü — başarısız: b.xyz: bilinmeyen dosya türü") {
+	if !strings.Contains(tr, "2 / 3 dosya BMP biçimine dönüştürüldü - başarısız: b.xyz: bilinmeyen dosya türü") {
 		t.Errorf("tr message %q", tr)
 	}
 }
@@ -178,10 +179,10 @@ func TestAllFail(t *testing.T) {
 	if out.OK || len(out.Outputs) != 0 {
 		t.Fatalf("out %+v", out)
 	}
-	if !strings.HasPrefix(out.Message["en"], "nothing converted — broken.png: conversion failed") {
+	if !strings.HasPrefix(out.Message["en"], "nothing converted - broken.png: conversion failed") {
 		t.Errorf("message %v", out.Message)
 	}
-	if !strings.HasPrefix(out.Message["tr"], "hiçbir dosya dönüştürülemedi — broken.png: dönüşüm başarısız oldu") {
+	if !strings.HasPrefix(out.Message["tr"], "hiçbir dosya dönüştürülemedi - broken.png: dönüşüm başarısız oldu") {
 		t.Errorf("message %v", out.Message)
 	}
 }
@@ -189,14 +190,14 @@ func TestAllFail(t *testing.T) {
 func TestEngineStep(t *testing.T) {
 	h := newFake()
 	h.input("in:0", "docx bytes")
-	out := run(t, h, "pdf", map[string]bool{graph.LibreOffice: true}, nil, "Quarterly Report.docx")
+	out := run(t, h, "pdf", map[string]bool{graph.Office: true}, nil, "Quarterly Report.docx")
 	if !out.OK || len(out.Outputs) != 1 {
 		t.Fatalf("out %+v", out)
 	}
 	if out.Outputs[0].Name != "Quarterly Report.pdf" {
 		t.Errorf("name %q", out.Outputs[0].Name)
 	}
-	if len(h.requests) != 1 || h.requests[0].Engine != graph.LibreOffice {
+	if len(h.requests) != 1 || h.requests[0].Engine != graph.Office {
 		t.Fatalf("requests %+v", h.requests)
 	}
 	req := h.requests[0]
@@ -344,7 +345,7 @@ func TestMultiHopEngineThenPure(t *testing.T) {
 }
 
 func TestPureThenEngine(t *testing.T) {
-	// json → csv (pure) → ods (soffice): the pure output ref is the engine input.
+	// json → csv (pure) → ods (office engine): the pure output ref is the engine input.
 	h := newFake()
 	h.input("in:0", `[{"a":"1","b":"2"}]`)
 	out := run(t, h, "ods", graph.AllEngines(), nil, "rows.json")
@@ -420,6 +421,32 @@ func TestErrorTextAndUnwrap(t *testing.T) {
 	}
 	if (&Error{Code: CodeNoRoute}).Error() != "no_route" {
 		t.Error("bare code")
+	}
+}
+
+// filex 0.50: the office engine is the ONLYOFFICE connected to filex, so a
+// job that needed it and found none says what is missing - a server, not a
+// program - in every language, and never names LibreOffice.
+//
+// Red before 0.2.0: "needs an engine this server does not have (LibreOffice)".
+func TestErrorText_TheOfficeEngineIsNotConnected(t *testing.T) {
+	e := &Error{Code: CodeEngineMissing, File: "teklif.docx", Detail: "office: engine office is not configured on this host", Engines: []string{graph.Office}}
+	text := e.Text()
+	if got := text["en"]; got != "teklif.docx: office documents need ONLYOFFICE, which is not connected to this server" {
+		t.Errorf("en %q", got)
+	}
+	if got := text["tr"]; got != "teklif.docx: ofis belgeleri için ONLYOFFICE gerekiyor ve bu sunucuya bağlı değil" {
+		t.Errorf("tr %q", got)
+	}
+	for _, lang := range i18n.Langs {
+		if !strings.Contains(text[lang], "ONLYOFFICE") || strings.Contains(text[lang], "LibreOffice") {
+			t.Errorf("%s: %q", lang, text[lang])
+		}
+	}
+	// Another engine missing beside it keeps the generic sentence.
+	both := &Error{Code: CodeEngineMissing, Engines: []string{graph.FFmpeg, graph.Office}}
+	if got := both.Text()["en"]; !strings.Contains(got, "FFmpeg, ONLYOFFICE") {
+		t.Errorf("both %q", got)
 	}
 }
 
@@ -530,13 +557,13 @@ func TestTheJobSpeaksSpanishGermanAndFrench(t *testing.T) {
 	merged := mergedSummary(3, "ico")
 	for lang, want := range map[string][3]string{
 		"es": {"convertido a Texto sin formato (.txt)",
-			"1 de 2 convertidos a PNG — con errores: a.heic: requiere un motor que este servidor no tiene (ImageMagick)",
+			"1 de 2 convertidos a PNG - con errores: a.heic: requiere un motor que este servidor no tiene (ImageMagick)",
 			"3 archivos combinados en un solo Icono (.ico)"},
 		"de": {"in Reiner Text (.txt) konvertiert",
-			"1 von 2 in PNG konvertiert – fehlgeschlagen: a.heic: benötigt eine Engine, die auf diesem Server fehlt (ImageMagick)",
+			"1 von 2 in PNG konvertiert - fehlgeschlagen: a.heic: benötigt eine Engine, die auf diesem Server fehlt (ImageMagick)",
 			"3 Dateien zu einer Datei im Format Symbol (.ico) zusammengeführt"},
 		"fr": {"converti en Texte brut (.txt)",
-			"1 sur 2 convertis en PNG — échecs : a.heic : nécessite un moteur absent de ce serveur (ImageMagick)",
+			"1 sur 2 convertis en PNG - échecs : a.heic : nécessite un moteur absent de ce serveur (ImageMagick)",
 			"3 fichiers combinés en un seul fichier Icône (.ico)"},
 	} {
 		if done[lang] != want[0] {

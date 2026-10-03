@@ -1,7 +1,7 @@
 {
   "manifest_version": 1,
   "name": "convert",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "label": {
     "en": "Convert",
     "tr": "Dönüştür",
@@ -10,22 +10,23 @@
     "fr": "Convertir"
   },
   "description": {
-    "en": "Convert anything to anything: images, video, audio, documents, e-books, archives, data, subtitles and fonts — most of it in pure Go inside the sandbox (Markdown/Word/HTML → PDF, images → PDF, CSV ↔ XLSX, EPUB, WebP, ICO …), the rest through the server's ffmpeg, ImageMagick, LibreOffice, Ghostscript, poppler and rsvg. Spanish, German and French are AI-translated, awaiting review by a native speaker — corrections welcome.",
-    "tr": "Her şeyi her şeye dönüştürür: görsel, video, ses, belge, e-kitap, arşiv, veri, altyazı ve yazı tipi — çoğu kum havuzunda saf Go ile (Markdown/Word/HTML → PDF, görsel → PDF, CSV ↔ XLSX, EPUB, WebP, ICO …), kalanı sunucunun ffmpeg, ImageMagick, LibreOffice, Ghostscript, poppler ve rsvg motorlarıyla. İspanyolca, Almanca ve Fransızca yapay zekâ çevirisidir; ana dili bu diller olan birinin gözden geçirmesini bekliyor — düzeltmeler memnuniyetle karşılanır.",
-    "es": "Convierte cualquier cosa en cualquier cosa: imágenes, video, audio, documentos, libros electrónicos, archivos comprimidos, datos, subtítulos y fuentes — la mayor parte en Go puro dentro del entorno aislado (Markdown/Word/HTML → PDF, imágenes → PDF, CSV ↔ XLSX, EPUB, WebP, ICO …), el resto con ffmpeg, ImageMagick, LibreOffice, Ghostscript, poppler y rsvg del servidor. El español, el alemán y el francés están traducidos con IA y esperan la revisión de un hablante nativo; se agradecen las correcciones.",
-    "de": "Konvertiert alles in alles: Bilder, Video, Audio, Dokumente, E-Books, Archive, Daten, Untertitel und Schriftarten – das meiste in reinem Go innerhalb der Sandbox (Markdown/Word/HTML → PDF, Bilder → PDF, CSV ↔ XLSX, EPUB, WebP, ICO …), den Rest über ffmpeg, ImageMagick, LibreOffice, Ghostscript, poppler und rsvg des Servers. Spanisch, Deutsch und Französisch wurden von einer KI übersetzt und warten auf die Prüfung durch Muttersprachler — Korrekturen sind willkommen.",
-    "fr": "Convertit tout en tout : images, vidéo, audio, documents, livres numériques, archives, données, sous-titres et polices — l’essentiel en Go pur dans le bac à sable (Markdown/Word/HTML → PDF, images → PDF, CSV ↔ XLSX, EPUB, WebP, ICO…), le reste via ffmpeg, ImageMagick, LibreOffice, Ghostscript, poppler et rsvg du serveur. L’espagnol, l’allemand et le français sont traduits par IA et attendent la relecture d’un locuteur natif ; les corrections sont les bienvenues."
+    "en": "Convert anything to anything: images, video, audio, documents, e-books, archives, data, subtitles and fonts - most of it in pure Go inside the sandbox (Markdown/Word/HTML → PDF, images → PDF, CSV ↔ XLSX, EPUB, WebP, ICO …), the rest through the server's ffmpeg, ImageMagick, Ghostscript, poppler and rsvg, and office documents with their layout through the ONLYOFFICE Document Server connected to filex. Spanish, German and French are AI-translated, awaiting review by a native speaker - corrections welcome.",
+    "tr": "Her şeyi her şeye dönüştürür: görsel, video, ses, belge, e-kitap, arşiv, veri, altyazı ve yazı tipi - çoğu kum havuzunda saf Go ile (Markdown/Word/HTML → PDF, görsel → PDF, CSV ↔ XLSX, EPUB, WebP, ICO …), kalanı sunucunun ffmpeg, ImageMagick, Ghostscript, poppler ve rsvg motorlarıyla, ofis belgeleri ise sayfa düzeniyle filex'e bağlı ONLYOFFICE Document Server üzerinden. İspanyolca, Almanca ve Fransızca yapay zekâ çevirisidir; ana dili bu diller olan birinin gözden geçirmesini bekliyor - düzeltmeler memnuniyetle karşılanır.",
+    "es": "Convierte cualquier cosa en cualquier cosa: imágenes, video, audio, documentos, libros electrónicos, archivos comprimidos, datos, subtítulos y fuentes - la mayor parte en Go puro dentro del entorno aislado (Markdown/Word/HTML → PDF, imágenes → PDF, CSV ↔ XLSX, EPUB, WebP, ICO …), el resto con ffmpeg, ImageMagick, Ghostscript, poppler y rsvg del servidor, y los documentos de Office, con su diseño, mediante el ONLYOFFICE Document Server conectado a filex. El español, el alemán y el francés están traducidos con IA y esperan la revisión de un hablante nativo; se agradecen las correcciones.",
+    "de": "Konvertiert alles in alles: Bilder, Video, Audio, Dokumente, E-Books, Archive, Daten, Untertitel und Schriftarten - das meiste in reinem Go innerhalb der Sandbox (Markdown/Word/HTML → PDF, Bilder → PDF, CSV ↔ XLSX, EPUB, WebP, ICO …), den Rest über ffmpeg, ImageMagick, Ghostscript, poppler und rsvg des Servers, und Office-Dokumente mit ihrem Layout über den mit filex verbundenen ONLYOFFICE Document Server. Spanisch, Deutsch und Französisch wurden von einer KI übersetzt und warten auf die Prüfung durch Muttersprachler - Korrekturen sind willkommen.",
+    "fr": "Convertit tout en tout : images, vidéo, audio, documents, livres numériques, archives, données, sous-titres et polices - l’essentiel en Go pur dans le bac à sable (Markdown/Word/HTML → PDF, images → PDF, CSV ↔ XLSX, EPUB, WebP, ICO…), le reste via ffmpeg, ImageMagick, Ghostscript, poppler et rsvg du serveur, et les documents Office, avec leur mise en page, via l’ONLYOFFICE Document Server connecté à filex. L’espagnol, l’allemand et le français sont traduits par IA et attendent la relecture d’un locuteur natif ; les corrections sont les bienvenues."
   },
   "icon": "convert",
   "homepage": "https://github.com/BRF-Tech/filex-convert",
-  "min_filex": "0.43.0",
+  "min_filex": "0.50.0",
+  "filex": ">=0.50.0",
   "languages": ["en", "tr", "es", "de", "fr"],
   "permissions": [
     "files:read",
     "files:write",
     "engines:ffmpeg",
     "engines:imagemagick",
-    "engines:libreoffice",
+    "engines:office",
     "engines:ghostscript",
     "engines:poppler",
     "engines:rsvg"
@@ -59,12 +60,12 @@
       "de": "Bildformate, die Go nicht selbst dekodieren kann (HEIC, AVIF, PSD, XCF, DDS, EXR), und Ausgabe als AVIF/PSD/DDS/EXR.",
       "fr": "Formats d’image que Go ne sait pas décoder seul (HEIC, AVIF, PSD, XCF, DDS, EXR) et sortie AVIF/PSD/DDS/EXR."
     },
-    "engines:libreoffice": {
-      "en": "Office documents with their layout: Word, Excel, PowerPoint and OpenDocument to PDF, EPUB and to each other (without it, Word/ODT/RTF/PPTX still convert in the sandbox with text and tables only).",
-      "tr": "Ofis belgeleri sayfa düzeniyle: Word, Excel, PowerPoint ve OpenDocument'tan PDF'e, EPUB'a ve birbirine (motor yokken Word/ODT/RTF/PPTX kum havuzunda yalnız metin ve tablolarla dönüşür).",
-      "es": "Documentos de Office con su diseño: Word, Excel, PowerPoint y OpenDocument a PDF, EPUB y entre sí (sin él, Word/ODT/RTF/PPTX se siguen convirtiendo en el entorno aislado, solo con texto y tablas).",
-      "de": "Office-Dokumente mit ihrem Layout: Word, Excel, PowerPoint und OpenDocument nach PDF, EPUB und untereinander (ohne diese Engine werden Word/ODT/RTF/PPTX weiterhin in der Sandbox konvertiert, aber nur mit Text und Tabellen).",
-      "fr": "Documents Office avec leur mise en page : Word, Excel, PowerPoint et OpenDocument vers PDF, EPUB et entre eux (sans ce moteur, Word/ODT/RTF/PPTX restent convertis dans le bac à sable, mais seulement avec le texte et les tableaux)."
+    "engines:office": {
+      "en": "Office documents with their layout, through the ONLYOFFICE Document Server connected to filex: Word, Excel, PowerPoint and OpenDocument to PDF (PDF/A too), EPUB and to each other (without it, Word/ODT/RTF/PPTX still convert in the sandbox with text and tables only).",
+      "tr": "Ofis belgeleri sayfa düzeniyle, filex'e bağlı ONLYOFFICE Document Server üzerinden: Word, Excel, PowerPoint ve OpenDocument'tan PDF'e (PDF/A da), EPUB'a ve birbirine (bağlı değilken Word/ODT/RTF/PPTX kum havuzunda yalnız metin ve tablolarla dönüşür).",
+      "es": "Documentos de Office con su diseño, mediante el ONLYOFFICE Document Server conectado a filex: Word, Excel, PowerPoint y OpenDocument a PDF (también PDF/A), EPUB y entre sí (sin él, Word/ODT/RTF/PPTX se siguen convirtiendo en el entorno aislado, solo con texto y tablas).",
+      "de": "Office-Dokumente mit ihrem Layout, über den mit filex verbundenen ONLYOFFICE Document Server: Word, Excel, PowerPoint und OpenDocument nach PDF (auch PDF/A), EPUB und untereinander (ohne ihn werden Word/ODT/RTF/PPTX weiterhin in der Sandbox konvertiert, aber nur mit Text und Tabellen).",
+      "fr": "Documents Office avec leur mise en page, via l’ONLYOFFICE Document Server connecté à filex : Word, Excel, PowerPoint et OpenDocument vers PDF (PDF/A compris), EPUB et entre eux (sans lui, Word/ODT/RTF/PPTX restent convertis dans le bac à sable, mais seulement avec le texte et les tableaux)."
     },
     "engines:ghostscript": {
       "en": "PDF compression, PDF/A, PostScript/EPS conversions and PDF pages to images when poppler is absent.",
@@ -122,6 +123,6 @@
   "limits": { "memory_pages": 4096, "call_timeout_s": 15 },
   "wasm": {
     "url": "https://github.com/BRF-Tech/filex-convert/releases/download/{tag}/plugin.wasm",
-    "sha256": "0448965cdf479d8140751ddaae85b0e8cc3cea6b580d2d622cfa8e793deaf6e9"
+    "sha256": "e8786f26cf19974e65f0423e0d666bca72281e562deb962cd0668e5383a602d9"
   }
 }

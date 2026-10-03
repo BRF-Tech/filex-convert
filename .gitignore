@@ -12,3 +12,6 @@ Thumbs.db
 
 # go
 /vendor/
+
+# agent worktrees (filex rule: worktrees live inside the repo)
+.claude/

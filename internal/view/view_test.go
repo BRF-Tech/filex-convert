@@ -311,8 +311,16 @@ func TestOpenPureGoOnly(t *testing.T) {
 	}
 	// the note names the missing engines and the list says what each unlocks
 	joined := strings.Join(texts(s), "\n")
-	if !strings.Contains(joined, "Not installed on this server: FFmpeg, ImageMagick, LibreOffice, Ghostscript, Poppler, librsvg") {
+	if !strings.Contains(joined, "Not installed on this server: FFmpeg, ImageMagick, Ghostscript, Poppler, librsvg.") {
 		t.Errorf("missing-engine note absent:\n%s", joined)
+	}
+	// filex 0.50: the office engine is a document server to CONNECT, said
+	// apart - never "not installed".
+	if !strings.Contains(joined, "Office documents are converted by ONLYOFFICE, and none is connected to this server.") {
+		t.Errorf("the office engine's note is absent:\n%s", joined)
+	}
+	if strings.Contains(joined, "LibreOffice") {
+		t.Errorf("the screen still names LibreOffice:\n%s", joined)
 	}
 	if !strings.Contains(joined, "Bu sunucuda kurulu değil") {
 		t.Errorf("tr note missing:\n%s", joined)
@@ -432,7 +440,7 @@ func TestUnknownSourceBlocks(t *testing.T) {
 		}
 	}
 	joined := strings.Join(texts(w.last), "\n")
-	if !strings.Contains(joined, "unknown file type — weird.xyz") || !strings.Contains(joined, "bilinmeyen dosya türü — weird.xyz") {
+	if !strings.Contains(joined, "unknown file type - weird.xyz") || !strings.Contains(joined, "bilinmeyen dosya türü - weird.xyz") {
 		t.Errorf("texts %q", joined)
 	}
 	if len(w.last.Actions) != 1 || w.last.Actions[0].ID != ActionCancel {

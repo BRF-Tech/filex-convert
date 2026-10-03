@@ -50,6 +50,7 @@ func TestManifestIsTheFileOnDisk(t *testing.T) {
 		Icon              string         `json:"icon"`
 		Homepage          string         `json:"homepage"`
 		MinFilex          string         `json:"min_filex"`
+		Filex             string         `json:"filex"`
 		Languages         []string       `json:"languages"`
 		UILocales         map[string]any `json:"ui_locales"`
 		Permissions       []string       `json:"permissions"`

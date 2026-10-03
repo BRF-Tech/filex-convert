@@ -32,14 +32,18 @@ const (
 	PureGo      = ""
 	FFmpeg      = "ffmpeg"
 	ImageMagick = "imagemagick"
-	LibreOffice = "libreoffice"
+	// Office is the office engine: since filex 0.50 the ONLYOFFICE Document
+	// Server filex is connected to. Until 0.50 it was LibreOffice, asked for
+	// as `libreoffice`; to the host the two names are one engine and one
+	// grant, and both read the soffice command line engines.soffice writes.
+	Office      = "office"
 	Ghostscript = "ghostscript"
 	Poppler     = "poppler"
 	RSVG        = "rsvg"
 )
 
 // Engines lists every engine the graph may name, in permission order.
-var Engines = []string{FFmpeg, ImageMagick, LibreOffice, Ghostscript, Poppler, RSVG}
+var Engines = []string{FFmpeg, ImageMagick, Office, Ghostscript, Poppler, RSVG}
 
 // Edge is one conversion step.
 type Edge struct {
@@ -135,8 +139,9 @@ func EngineName(id string) string {
 		return "FFmpeg"
 	case ImageMagick:
 		return "ImageMagick"
-	case LibreOffice:
-		return "LibreOffice"
+	case Office:
+		// The project's own spelling, the one filex uses for it.
+		return "ONLYOFFICE"
 	case Ghostscript:
 		return "Ghostscript"
 	case Poppler:
@@ -179,7 +184,7 @@ func (r Plan) Words(name func(id string) string, locale string) string {
 	return s
 }
 
-// String renders "docx → pdf (libreoffice)" — the log line; see Words for
+// String renders "docx → pdf (office)" — the log line; see Words for
 // the one a person reads.
 func (r Plan) String() string {
 	if len(r) == 0 {

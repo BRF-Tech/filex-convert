@@ -5,7 +5,7 @@ go 1.25.0
 require (
 	github.com/BurntSushi/toml v1.6.0
 	github.com/HugoSmits86/nativewebp v1.3.0
-	github.com/brf-tech/filex/backend v0.43.0
+	github.com/brf-tech/filex/backend v0.50.0
 	github.com/klauspost/compress v1.19.1
 	github.com/nwaples/rardecode/v2 v2.4.1
 	github.com/ulikunitz/xz v0.5.17

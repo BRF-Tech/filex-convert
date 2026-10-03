@@ -1,5 +1,5 @@
 // Package engines builds the argument vectors for the host's heavy engines
-// (ffmpeg, ImageMagick, LibreOffice, Ghostscript, poppler, rsvg). It never
+// (ffmpeg, ImageMagick, the office engine, Ghostscript, poppler, rsvg). It never
 // runs anything: the job layer hands an Invocation to pluginkit.EngineRun.
 //
 // Two rules from the host shape everything here:
@@ -61,7 +61,7 @@ func Build(e graph.Edge, inName, outStem string, opts options.Options) (Invocati
 		inv, err = ffmpeg(e, inName, outStem, opts)
 	case graph.ImageMagick:
 		inv, err = magick(e, inName, outStem, opts)
-	case graph.LibreOffice:
+	case graph.Office:
 		inv, err = soffice(e, inName, outStem, opts)
 	case graph.Ghostscript:
 		inv, err = ghostscript(e, inName, outStem, opts)
@@ -399,7 +399,15 @@ func magick(e graph.Edge, in, stem string, o options.Options) (Invocation, error
 	return Invocation{Args: args, Outputs: []string{out}, TimeoutS: 300}, nil
 }
 
-// ── LibreOffice ──
+// ── The office engine ──
+//
+// Since filex 0.50 the office engine is the connected ONLYOFFICE Document
+// Server, and the host reads this same soffice command line as a conversion
+// (pkg/pluginkit/officecmd): the target extension, PDF/A from the PDF
+// option, the CSV separator and character set from the CSV options; the
+// filter names themselves are not used. The line is kept as LibreOffice
+// wrote it, so one shape serves both and nothing here depends on which
+// program is behind the engine.
 
 // sofficeFilter names the export filter per target. Writer/Calc/Impress
 // each have their own filter for the same target extension, so the choice

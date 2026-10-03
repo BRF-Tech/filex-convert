@@ -67,7 +67,12 @@ func (e *Error) Error() string {
 func (e *Error) Text() wire.Text {
 	return i18n.Each(func(lang string) string {
 		s := i18n.S(lang, "error."+string(e.Code))
-		if len(e.Engines) > 0 && (e.Code == CodeEngineMissing || e.Code == CodeEngineFailed) {
+		if e.Code == CodeEngineMissing && len(e.Engines) == 1 && e.Engines[0] == graph.Office {
+			// The office engine is connected, not installed (filex 0.50):
+			// "needs an engine this server does not have (ONLYOFFICE)" sent
+			// people looking for a program.
+			s = i18n.S(lang, "error.office_missing")
+		} else if len(e.Engines) > 0 && (e.Code == CodeEngineMissing || e.Code == CodeEngineFailed) {
 			s = i18n.S(lang, "error.with_detail", "message", s, "detail", strings.Join(graph.EngineNames(e.Engines), ", "))
 		}
 		if e.File != "" {

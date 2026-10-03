@@ -478,7 +478,7 @@ func TestOptionsScreenSpeaksEveryLanguage(t *testing.T) {
 // calls an app (filex feat/043-srvtext fixes that); plugintest calls with
 // each declared locale set directly, which is what this measures.
 func TestOptionsScreenHasTheSameShapeInEveryLanguage(t *testing.T) {
-	h := harness("ffmpeg", "libreoffice")
+	h := harness("ffmpeg", "office")
 	byLocale, err := h.OpenInLocales("options", photo())
 	if err != nil {
 		t.Fatal(err)

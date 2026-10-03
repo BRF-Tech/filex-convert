@@ -108,7 +108,7 @@ func TestTwoHopRoute(t *testing.T) {
 	if len(r) != 2 || r[0].Engine != ImageMagick || r[1].Engine != PureGo {
 		t.Errorf("heic→qoi = %s", r)
 	}
-	// docx → png: docx → pdf (soffice) → png (poppler)
+	// docx → png: docx → pdf (office engine) → png (poppler)
 	r, err = Route("docx", "png", AllEngines())
 	if err != nil {
 		t.Fatal(err)
@@ -243,13 +243,13 @@ func TestNoRouteAndMissingEngines(t *testing.T) {
 	if len(nre.MissingEngines) != 1 || nre.MissingEngines[0] != ImageMagick {
 		t.Errorf("missing engines = %v", nre.MissingEngines)
 	}
-	// docx → pdf works without LibreOffice (pure Go) but prefers it
+	// docx → pdf works without the office engine (pure Go) but prefers it
 	r, err := Route("docx", "pdf", nil)
 	if err != nil || len(r) != 1 || r[0].Engine != PureGo {
 		t.Errorf("docx→pdf without engines = %s %v", r, err)
 	}
 	r, err = Route("docx", "pdf", AllEngines())
-	if err != nil || len(r) != 1 || r[0].Engine != LibreOffice {
+	if err != nil || len(r) != 1 || r[0].Engine != Office {
 		t.Errorf("docx→pdf with engines = %s %v", r, err)
 	}
 	if _, err := Route("mp3", "docx", AllEngines()); !errors.Is(err, ErrNoRoute) {
@@ -340,7 +340,7 @@ func TestPackEdgesAndImages(t *testing.T) {
 
 func TestRouteString(t *testing.T) {
 	r, _ := Route("docx", "png", AllEngines())
-	if s := r.String(); s != "docx → pdf (libreoffice) → png (poppler)" {
+	if s := r.String(); s != "docx → pdf (office) → png (poppler)" {
 		t.Errorf("String() = %q", s)
 	}
 }
