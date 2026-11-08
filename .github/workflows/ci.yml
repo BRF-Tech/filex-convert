@@ -42,7 +42,7 @@ jobs:
           go run ./tools/matrix > MATRIX.md
           git diff --exit-code -- manifest.embed.json MATRIX.md
 
-      - name: Build plugin.wasm (size gate 8 MiB soft / 16 MiB hard)
+      - name: Build plugin.wasm (size gate 8 MiB soft / 24 MiB hard)
         run: bash scripts/build.sh
 
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

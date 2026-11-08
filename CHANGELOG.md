@@ -7,6 +7,15 @@ is the one a tag must match.
 
 ## [Unreleased]
 
+### Changed
+
+- **The build's hard size limit is 24 MiB, was 16 MiB;** the 8 MiB soft
+  warning stays. The limit is this app's own budget: filex accepts a module
+  up to 64 MiB (`FILEX_APP_PLUGIN_MAX_WASM_MB`). Go 1.27 alone added 1.1 MiB,
+  and 0.2.1 came out 0.3 MiB under the old limit, so the next library or
+  compiler update would not have built. MATRIX.md's 7z line no longer names
+  the old limit. No new version: the module is the same.
+
 ## [0.2.1] - 2026-11-08
 
 A patch release: the libraries the module is built from and the compiler

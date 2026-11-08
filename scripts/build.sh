@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Builds plugin.wasm with stock Go, prints its sha256 and enforces the size
-# gate: warn above SOFT_MB (8), fail above HARD_MB (16).
+# gate: warn above SOFT_MB (8), fail above HARD_MB (24).
 #
 #   bash scripts/build.sh            -> plugin.wasm + plugin.wasm.sha256
 #   bash scripts/build.sh --stamp    -> also writes that sha256 into filex-app.json
@@ -48,8 +48,15 @@ case "${1:-}" in
   *) echo "usage: bash scripts/build.sh [--stamp]" >&2; exit 2 ;;
 esac
 OUT="${OUT:-plugin.wasm}"
+# The hard gate is this app's own budget, not filex's limit: filex accepts a
+# module up to 64 MiB (FILEX_APP_PLUGIN_MAX_WASM_MB, default 64), and every
+# install compiles it, so the module is kept well under that. It was 16 MiB
+# until 2026-11-08: Go 1.27 alone added ~1.1 MiB (the same sources: 14.5 MiB
+# with Go 1.25.5, 15.6 MiB with Go 1.27.3), and 0.2.1 came out 0.3 MiB under
+# the gate - the next library or compiler update would not have built. 24 MiB
+# leaves room for those updates; the 8 MiB soft warning stays.
 SOFT_MB="${SOFT_MB:-8}"
-HARD_MB="${HARD_MB:-16}"
+HARD_MB="${HARD_MB:-24}"
 if [ "${SKIP_TESTS:-0}" = "1" ]; then
   echo "tests skipped (SKIP_TESTS=1) — do not release this module" >&2
 else

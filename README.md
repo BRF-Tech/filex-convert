@@ -188,7 +188,7 @@ into an archive keeps its name as the member's name.
 | Job | 15 minutes | the action's `limits.timeout_s`; each engine step asks for 5-14 minutes of that |
 | Route | 3 steps | anything longer is a conversion nobody asked for |
 | Retry | once | when an engine step fails, the planner tries one alternative route that avoids the failed edge (poppler → Ghostscript → ImageMagick for PDF pages, the office engine → pure Go for Word) |
-| Module | 15.7 MiB | the wasm; the build script warns above 8 MiB and fails above 16 MiB |
+| Module | 15.7 MiB | the wasm; the build script warns above 8 MiB and fails above 24 MiB (filex itself accepts up to 64 MiB) |
 
 Document fidelity in the sandbox is "text, structure and tables": headings,
 paragraphs, lists, code, quotes, tables, links, bold, italic, strike-through.
@@ -264,7 +264,7 @@ go test ./...                 # host-side tests: catalogue, routing, pure-Go rou
                               # against a fake host (including merge), screens
 bash scripts/build.sh         # runs `go test ./...` FIRST, then
                               # GOOS=wasip1 GOARCH=wasm … -buildmode=c-shared → plugin.wasm
-                              # prints the sha256 and enforces the size gate (8 MiB soft, 16 MiB hard)
+                              # prints the sha256 and enforces the size gate (8 MiB soft, 24 MiB hard)
                               # a failing test produces NO module (SKIP_TESTS=1 only for bisecting)
 go test ./... -update         # rewrite the golden screens under internal/app/testdata/golden
 go generate ./...             # refresh manifest.embed.json after editing filex-app.json

@@ -21,7 +21,7 @@ var notOffered = [][2]string{
 	{"PDF → DOCX / ODT / RTF (editable text with layout)", "no engine path: the office engine is asked for office documents only, and a PDF turned into one is a page of text boxes, not a document. The text itself is reachable: PDF → TXT (poppler or Ghostscript)."},
 	{"EPUB → anything through pandoc", "pandoc is not one of the six host engines; EPUB is read by the sandbox's own reader instead (text, structure, tables) and written by its own writer."},
 	{"MOBI / AZW3", "proprietary Kindle containers; no reader or writer in pure Go within the size budget and no engine handles them. Convert the EPUB instead."},
-	{"7z", "the pure-Go reader costs 5.4 MiB of wasm (measured with `scripts/size-probe.sh`), which would push the module past the 16 MiB gate. RAR is read; 7z is not."},
+	{"7z", "the pure-Go reader costs 5.4 MiB of wasm (measured with `scripts/size-probe.sh`), which would grow the module by a third (to about 21 MiB) for one archive format, and every install compiles the module. RAR is read; 7z is not."},
 	{"RAR / 7z / tar.bz2 writing", "RAR's compressor is proprietary, 7z is not read either, and Go's standard library has no bzip2 compressor. Every archive can be read into ZIP, TAR, tar.gz, tar.zst or tar.xz."},
 	{"WOFF2", "needs Brotli plus the glyf transform; WOFF 1.0 is exact and round-trips, WOFF2 is not offered."},
 	{"OTF (CFF outlines) → TTF", "the outlines would have to be converted from cubic to quadratic curves; renaming would produce a broken font. TTF → OTF is offered (an OpenType file may carry TrueType outlines)."},
