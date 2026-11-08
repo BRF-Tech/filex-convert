@@ -8,8 +8,10 @@
 # workflow rebuilds the module and refuses to publish unless its hash equals
 # the committed one.
 set -euo pipefail
-export GOTOOLCHAIN=local
 cd "$(dirname "$0")/.."
+# The compiler go.mod pins (`toolchain goX.Y.Z`), as in scripts/build.sh.
+GOTOOLCHAIN="$(sed -n 's/^toolchain //p' go.mod)"
+export GOTOOLCHAIN="${GOTOOLCHAIN:?go.mod has no toolchain line}"
 go generate ./...
 bash scripts/build.sh
 go run ./tools/setsha plugin.wasm

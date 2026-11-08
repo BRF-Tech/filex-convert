@@ -1,7 +1,7 @@
 {
   "manifest_version": 1,
   "name": "convert",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "label": {
     "en": "Convert",
     "tr": "Dönüştür",

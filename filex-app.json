@@ -1,7 +1,7 @@
 {
   "manifest_version": 1,
   "name": "convert",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "label": {
     "en": "Convert",
     "tr": "Dönüştür",
@@ -123,6 +123,6 @@
   "limits": { "memory_pages": 4096, "call_timeout_s": 15 },
   "wasm": {
     "url": "https://github.com/BRF-Tech/filex-convert/releases/download/{tag}/plugin.wasm",
-    "sha256": "e8786f26cf19974e65f0423e0d666bca72281e562deb962cd0668e5383a602d9"
+    "sha256": "0005da3ea0570f1343fd27a3a06e8e79b4a1d9e37a633d5edcf6b5de71e937fa"
   }
 }

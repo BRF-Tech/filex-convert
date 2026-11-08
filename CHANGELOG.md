@@ -7,6 +7,34 @@ is the one a tag must match.
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-11-08
+
+A patch release: the libraries the module is built from and the compiler
+move to their current versions. The conversions, the screens and the
+permissions are the same, and it still needs filex 0.50.0 or later.
+
+### Changed
+
+- **Dependencies:** `github.com/klauspost/compress` v1.19.1 → v1.20.3 (zstd
+  and the archive formats), `github.com/nwaples/rardecode/v2` v2.4.1 →
+  v2.4.6 (RAR), `github.com/yuin/goldmark` v1.7.13 → v1.8.7 (Markdown),
+  `golang.org/x/image` v0.39.0 → v0.47.0 (images, and the Go fonts PDFs are
+  set in) and `golang.org/x/text` v0.40.0 → v0.43.0. `go.mod` says `go
+  1.26.0`, the version these `golang.org/x` modules ask for.
+- **The compiler is pinned in `go.mod`:** `toolchain go1.27.3`, was Go
+  1.25.5, named in the two workflows and expected on the building machine
+  (`GOTOOLCHAIN=local`). Every script now forces the pinned toolchain
+  through `GOTOOLCHAIN`, and CI and the release workflow read it from
+  `go.mod`, so a build on any machine downloads that compiler and makes the
+  release's bytes.
+- The module is 15.7 MiB, was 14.5 MiB: Go 1.27 accounts for 1.1 MiB of it
+  (the same sources build to 14.5 MiB with Go 1.25.5 and 15.6 MiB with Go
+  1.27.3), the libraries for the rest. The build script's hard limit is
+  still 16 MiB.
+- CI: the GitHub Actions are pinned by commit SHA, at their current
+  versions (checkout v7.0.1, setup-go v7.0.0, upload-artifact v7.0.2,
+  action-gh-release v3.0.4).
+
 ## [0.2.0] - 2026-10-02
 
 ### Changed
@@ -204,7 +232,8 @@ offered with the reason for each, is `MATRIX.md`.
   renderer's rules, every language side by side, the grey list, a
   conversion end to end and golden screens.
 
-[Unreleased]: https://github.com/BRF-Tech/filex-convert/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/BRF-Tech/filex-convert/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/BRF-Tech/filex-convert/releases/tag/v0.2.1
 [0.2.0]: https://github.com/BRF-Tech/filex-convert/releases/tag/v0.2.0
 [0.1.1]: https://github.com/BRF-Tech/filex-convert/releases/tag/v0.1.1
 [0.1.0]: https://github.com/BRF-Tech/filex-convert/releases/tag/v0.1.0

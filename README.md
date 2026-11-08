@@ -93,7 +93,7 @@ It needs filex **0.50.0** or later (its office engine is the ONLYOFFICE
 connected to filex). On filex 0.43.0-0.49.x install `v0.1.1`.
 
 **Admin → Plugins → Apps → Install → GitHub repository**, enter
-`BRF-Tech/filex-convert` and a release tag (`v0.2.0`). filex fetches
+`BRF-Tech/filex-convert` and a release tag (`v0.2.1`). filex fetches
 `filex-app.json` from the repository at that tag, downloads `plugin.wasm`
 from the matching GitHub release and refuses it unless its sha256 is the one
 the manifest names. The install wizard then shows the permission review:
@@ -188,7 +188,7 @@ into an archive keeps its name as the member's name.
 | Job | 15 minutes | the action's `limits.timeout_s`; each engine step asks for 5-14 minutes of that |
 | Route | 3 steps | anything longer is a conversion nobody asked for |
 | Retry | once | when an engine step fails, the planner tries one alternative route that avoids the failed edge (poppler → Ghostscript → ImageMagick for PDF pages, the office engine → pure Go for Word) |
-| Module | 14.5 MiB | the wasm; the build script warns above 8 MiB and fails above 16 MiB |
+| Module | 15.7 MiB | the wasm; the build script warns above 8 MiB and fails above 16 MiB |
 
 Document fidelity in the sandbox is "text, structure and tables": headings,
 paragraphs, lists, code, quotes, tables, links, bold, italic, strike-through.
@@ -252,7 +252,10 @@ action_run (convert) ─▶ internal/job ─ graph.Route ─▶ per input, per e
 
 ## Development
 
-Stock Go 1.25, no TinyGo.
+Stock Go, no TinyGo: the toolchain `go.mod` pins (`toolchain go1.27.3`),
+which every script forces through `GOTOOLCHAIN` - Go downloads it when
+another version is installed, so the build gives the release's bytes on
+any machine.
 
 ```bash
 go test ./...                 # host-side tests: catalogue, routing, pure-Go round trips (images,

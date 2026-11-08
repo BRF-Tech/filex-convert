@@ -4,8 +4,10 @@
 # Development aid only; run from the repository root inside a Go toolchain.
 # PROBES="name:import ..." overrides the list.
 set -euo pipefail
-export GOTOOLCHAIN=local
 cd "$(dirname "$0")/.."
+# The compiler go.mod pins (`toolchain goX.Y.Z`), as in scripts/build.sh.
+GOTOOLCHAIN="$(sed -n 's/^toolchain //p' go.mod)"
+export GOTOOLCHAIN="${GOTOOLCHAIN:?go.mod has no toolchain line}"
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
 probe() {

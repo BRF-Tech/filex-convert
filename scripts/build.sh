@@ -28,9 +28,19 @@
 # module with a broken screen or a missing translation is worse than no
 # module: filex installs it, and the person finds out. SKIP_TESTS=1 is for
 # bisecting a build problem, never for a release.
+#
+# The compiler is the one go.mod pins (`toolchain goX.Y.Z`), forced through
+# GOTOOLCHAIN: another Go emits other bytes, and the release workflow builds
+# again at the tag with that same pin. Go downloads it when this machine has
+# another version, so the build does not depend on what is installed here.
 set -euo pipefail
-export GOTOOLCHAIN=local
 cd "$(dirname "$0")/.."
+pinned="$(sed -n 's/^toolchain //p' go.mod)"
+if [ -z "$pinned" ]; then
+  echo "go.mod has no 'toolchain goX.Y.Z' line: the build could not be reproduced elsewhere" >&2
+  exit 1
+fi
+export GOTOOLCHAIN="$pinned"
 STAMP=0
 case "${1:-}" in
   "") ;;
