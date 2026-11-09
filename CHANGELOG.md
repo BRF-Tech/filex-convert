@@ -15,6 +15,7 @@ is the one a tag must match.
   and 0.2.1 came out 0.3 MiB under the old limit, so the next library or
   compiler update would not have built. MATRIX.md's 7z line no longer names
   the old limit. No new version: the module is the same.
+- github.com/klauspost/compress v1.20.4 (was v1.20.3).
 
 ## [0.2.1] - 2026-11-08
 

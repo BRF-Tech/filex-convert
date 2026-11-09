@@ -8,7 +8,7 @@ require (
 	github.com/BurntSushi/toml v1.6.0
 	github.com/HugoSmits86/nativewebp v1.3.0
 	github.com/brf-tech/filex/backend v0.50.0
-	github.com/klauspost/compress v1.20.3
+	github.com/klauspost/compress v1.20.4
 	github.com/nwaples/rardecode/v2 v2.4.6
 	github.com/ulikunitz/xz v0.5.17
 	github.com/yuin/goldmark v1.8.7

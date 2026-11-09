@@ -123,6 +123,6 @@
   "limits": { "memory_pages": 4096, "call_timeout_s": 15 },
   "wasm": {
     "url": "https://github.com/BRF-Tech/filex-convert/releases/download/{tag}/plugin.wasm",
-    "sha256": "0005da3ea0570f1343fd27a3a06e8e79b4a1d9e37a633d5edcf6b5de71e937fa"
+    "sha256": "042b376ebeb854aa8bb45da4ecd1744397502e2910c1cecda9ab428a417f8fb6"
   }
 }
