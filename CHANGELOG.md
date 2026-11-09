@@ -7,6 +7,8 @@ is the one a tag must match.
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-11-09
+
 ### Changed
 
 - **The build's hard size limit is 24 MiB, was 16 MiB;** the 8 MiB soft
@@ -243,6 +245,7 @@ offered with the reason for each, is `MATRIX.md`.
   conversion end to end and golden screens.
 
 [Unreleased]: https://github.com/BRF-Tech/filex-convert/compare/v0.2.1...HEAD
+[0.2.2]: https://github.com/BRF-Tech/filex-convert/releases/tag/v0.2.2
 [0.2.1]: https://github.com/BRF-Tech/filex-convert/releases/tag/v0.2.1
 [0.2.0]: https://github.com/BRF-Tech/filex-convert/releases/tag/v0.2.0
 [0.1.1]: https://github.com/BRF-Tech/filex-convert/releases/tag/v0.1.1

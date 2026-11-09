@@ -1,7 +1,7 @@
 {
   "manifest_version": 1,
   "name": "convert",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "label": {
     "en": "Convert",
     "tr": "Dönüştür",
@@ -20,7 +20,13 @@
   "homepage": "https://github.com/BRF-Tech/filex-convert",
   "min_filex": "0.50.0",
   "filex": ">=0.50.0",
-  "languages": ["en", "tr", "es", "de", "fr"],
+  "languages": [
+    "en",
+    "tr",
+    "es",
+    "de",
+    "fr"
+  ],
   "permissions": [
     "files:read",
     "files:write",
@@ -100,10 +106,18 @@
         "fr": "Convertir…"
       },
       "icon": "convert",
-      "applies": { "kind": "file", "multi": true },
+      "applies": {
+        "kind": "file",
+        "multi": true
+      },
       "view": "options",
-      "output": { "mode": "sibling", "elsewhere": true },
-      "limits": { "timeout_s": 900 }
+      "output": {
+        "mode": "sibling",
+        "elsewhere": true
+      },
+      "limits": {
+        "timeout_s": 900
+      }
     }
   ],
   "views": [
@@ -120,5 +134,8 @@
       "size": "md"
     }
   ],
-  "limits": { "memory_pages": 4096, "call_timeout_s": 15 }
+  "limits": {
+    "memory_pages": 4096,
+    "call_timeout_s": 15
+  }
 }
