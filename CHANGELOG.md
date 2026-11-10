@@ -7,6 +7,10 @@ is the one a tag must match.
 
 ## [Unreleased]
 
+### Changed
+
+- golang.org/x/image v0.48.0 (was v0.47.0).
+
 ## [0.2.2] - 2026-11-09
 
 ### Changed
