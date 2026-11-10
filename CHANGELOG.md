@@ -7,6 +7,8 @@ is the one a tag must match.
 
 ## [Unreleased]
 
+## [0.2.3] - 2026-11-10
+
 ### Changed
 
 - golang.org/x/image v0.48.0 (was v0.47.0).
@@ -249,6 +251,7 @@ offered with the reason for each, is `MATRIX.md`.
   conversion end to end and golden screens.
 
 [Unreleased]: https://github.com/BRF-Tech/filex-convert/compare/v0.2.1...HEAD
+[0.2.3]: https://github.com/BRF-Tech/filex-convert/releases/tag/v0.2.3
 [0.2.2]: https://github.com/BRF-Tech/filex-convert/releases/tag/v0.2.2
 [0.2.1]: https://github.com/BRF-Tech/filex-convert/releases/tag/v0.2.1
 [0.2.0]: https://github.com/BRF-Tech/filex-convert/releases/tag/v0.2.0
