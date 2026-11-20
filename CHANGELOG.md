@@ -7,6 +7,10 @@ is the one a tag must match.
 
 ## [Unreleased]
 
+### Changed
+
+- github.com/klauspost/compress v1.20.5 (was v1.20.4).
+
 ## [0.2.3] - 2026-11-10
 
 ### Changed

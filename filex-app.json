@@ -140,6 +140,6 @@
   },
   "wasm": {
     "url": "https://github.com/BRF-Tech/filex-convert/releases/download/{tag}/plugin.wasm",
-    "sha256": "8ea2382ae63ab98d6917b473888bd70a4d01d88259064e1ba3c297ed83c28e80"
+    "sha256": "c88be299c41973a4e1adcd43b8698ad58ceba9b66766d4646a7d1ab890fc1812"
   }
 }
